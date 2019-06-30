@@ -7,6 +7,7 @@ import websockets
 
 from .exceptions import ShinkeiResumeWS, ShinkeiWSClosed, ShinkeiWSException
 from .keepalive import KeepAlivePls
+from .objects import MetadataPayload
 
 log = logging.getLogger(__name__)
 
@@ -23,20 +24,19 @@ class WSClient(websockets.WebSocketClientProtocol):
 
     @classmethod
     async def create(cls, client, dns, reconnect):
-        ws = await websockets.connect(dns, klass=cls)
+        ws = await websockets.connect(dns, create_protocol=cls)
 
         ws.client = client
-        #  ws.bot = client.bot
         ws.password = client.password
         ws.client_id = client.id
         ws.app_id = client.app_id
+        ws.tags = client.tags
         ws.reconnect = reconnect
 
+        # HELLO payload
         await ws.poll_event()
 
         await ws.identify()
-
-        await ws.poll_event()
 
         ws.keep_alive = KeepAlivePls(ws=ws)
         ws.keep_alive.start()
@@ -58,6 +58,11 @@ class WSClient(websockets.WebSocketClientProtocol):
         op = data["op"]
 
         if op == self.OP_READY:
+            cache = self.client._internal_cache
+            if cache:
+                log.info("Refreshing metadata, probably due to a reconnect (%d entries)", len(cache))
+                while cache:
+                    await self.update_metadata(cache.pop())
             return
 
         if op == self.OP_GOODBYE:
@@ -81,7 +86,7 @@ class WSClient(websockets.WebSocketClientProtocol):
         if op == self.OP_DISPATCH:
             listeners = self.client.listeners
             for coro in listeners:
-                self.loop.create_task(coro(data))
+                self.loop.create_task(coro(MetadataPayload(d)))
 
             return
 
@@ -94,24 +99,50 @@ class WSClient(websockets.WebSocketClientProtocol):
                 "client_id": self.client_id,
                 "application_id": self.app_id,
                 "reconnect": self.reconnect,
-                "auth": self.password
+                "tags": self.tags
             }
         }
-        log.warning("Sending IDENTIFY payload")
-        return await self.send_json(payload)
+        if self.password:
+            payload["auth"] = self.password
+        log.info("Sending IDENTIFY payload")
+        await self.send_json(payload)
+
+        await self.poll_event()
 
     async def send_metadata(self, data, *, target, nonce=None):
         payload = {
             "op": self.OP_DISPATCH,
+            "t": "SEND",
             "d": {
                 "nonce": nonce,
                 "target": target.to_json(),
                 "sender": self.client_id,
                 "payload": data,
             },
-            "t": "SEND"
         }
-        log.debug("Dispatching SEND with payload %s", payload)
+        return await self.send_json(payload)
+
+    async def broadcast_metadata(self, data, *, target, nonce=None):
+        payload = {
+            "op": self.OP_DISPATCH,
+            "t": "BROADCAST",
+            "d": {
+                "nonce": nonce,
+                "target": target.to_json(),
+                "sender": self.client_id,
+                "payload": data,
+            },
+        }
+        return await self.send_json(payload)
+
+    async def update_metadata(self, data):
+        payload = {
+            "op": self.OP_DISPATCH,
+            "t": "UPDATE_METADATA",
+            "d": data,
+        }
+        if self.client.cache:
+            self.client._internal_cache.append(data)
         return await self.send_json(payload)
 
     async def recv_json(self):

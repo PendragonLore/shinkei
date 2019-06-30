@@ -4,6 +4,7 @@ import asyncio
 import concurrent
 import json
 import logging
+import time
 import threading
 
 log = logging.getLogger(__name__)
@@ -18,6 +19,9 @@ class KeepAlivePls(threading.Thread):
 
         self.daemon = True
         self.stop_event = threading.Event()
+        self._last_ack = time.perf_counter()
+        self._last_send = time.perf_counter()
+        self.latency = float("inf")
 
     def run(self):
         data = json.dumps({
@@ -39,9 +43,16 @@ class KeepAlivePls(threading.Thread):
                         log.warning("Heartbeat blocked for more then %s", total)
             except Exception:
                 self.stop()
+            else:
+                self._last_send = time.perf_counter()
 
     def stop(self):
         self.stop_event.set()
 
     def ack(self):
+        self._last_ack = time.perf_counter()
+        self.latency = self._last_ack - self._last_send
         log.debug("Acked heartbeat for client with id %s", self.ws.client_id)
+
+        if self.latency > 10:
+            log.warning("Websocket is %.1fs behind.", self.latency)

@@ -4,37 +4,19 @@ import asyncio
 import inspect
 import logging
 import traceback
-import uuid
+from collections import deque
 
 import aiohttp
 import websockets
 from yarl import URL
 
 from .backoff import ExponentialBackoff
-from .exceptions import ShinkeiHTTPException
 from .gateway import ShinkeiResumeWS, ShinkeiWSClosed, WSClient
-from .objects import Version
 
 log = logging.getLogger(__name__)
 
 
 class Client:
-    __slots__ = (
-        "password",
-        "id",
-        "loop",
-        "app_id",
-        "session",
-        "rest_uri",
-        "ws_url",
-        "version",
-        "reconnect",
-        "_ws",
-        "schema_map",
-        "_task",
-        "_closed_event"
-    )
-
     listeners = []
 
     def __init__(self):
@@ -42,32 +24,30 @@ class Client:
         self.schema_map = {"singyeong": "ws", "ssingyeong": "wss"}
 
     @classmethod
-    async def _connect(cls, dns, rest_dns, application_id, client_id=None, password=None, *, reconnect=True,
-                       session=None, loop=None):
+    async def _connect(cls, dns, application_id, client_id, password=None, *, reconnect=True,
+                       session=None, loop=None, tags=None, cache=True):
         self = cls()
 
         self.loop = loop or asyncio.get_event_loop()
 
         self.password = password
-        self.id = client_id or uuid.uuid4().hex
+        self.id = client_id
         self.app_id = application_id
+        self.tags = tags or []
+
+        self.cache = cache
+        self._internal_cache = deque()
 
         self.session = session or aiohttp.ClientSession()
 
         ws_url = URL(dns).with_query("encoding=json") / "gateway" / "websocket"
         scheme = self.schema_map.get(ws_url.scheme, ws_url.scheme)
 
-        self.rest_uri = URL(rest_dns) / "api"
-
-        self.version = await self._fetch_version()
-
-        self.rest_uri = self.rest_uri / self.version.api
-
         self.ws_url = ws_url.with_scheme(scheme)
         self.reconnect = reconnect
 
         coro = WSClient.create(self, self.ws_url.human_repr(), reconnect=self.reconnect)
-        self._ws = await asyncio.wait_for(coro, timeout=30, loop=self.loop)
+        self._ws = await asyncio.wait_for(coro, timeout=20)
 
         self._task = self.loop.create_task(self._poll_data())
 
@@ -77,24 +57,24 @@ class Client:
     def is_closed(self):
         return self._closed_event.is_set()
 
+    @property
+    def latency(self):
+        return self._ws.keep_alive.latency
+
     async def close(self):
         self._closed_event.set()
         await self.session.close()
         self._ws.keep_alive.stop()
         await self._ws.close(1000)
 
-    async def _fetch_version(self):
-        async with self.session.get(self.rest_uri / "version") as request:
-            if not request.status == 200:
-                raise ShinkeiHTTPException(request, request.status,
-                                           f"Was not able to fetch version info ({request.status} {request.reason})")
-            return Version(data=await request.json())
-
-    async def discover(self, tags):
-        raise NotImplementedError()
-
     async def send(self, data, *, target, nonce=None):
         return await self._ws.send_metadata(data, target=target, nonce=nonce)
+
+    async def broadcast(self, data, *, target, nonce=None):
+        return await self._ws.broadcast_metadata(data, target=target, nonce=nonce)
+
+    async def update_metadata(self, data):
+        return await self._ws.update_metadata(data)
 
     @classmethod
     def listen(cls):
@@ -114,10 +94,13 @@ class Client:
             try:
                 await self._ws.poll_event()
             except ShinkeiResumeWS:
+                if not self.reconnect:
+                    log.info("GOODBYE received, disconnected")
+                    return
                 log.info("GOODBYE received, trying to reconnect.")
                 coro = WSClient.create(self, self.ws_url.human_repr(), reconnect=self.reconnect)
 
-                self._ws = await asyncio.wait_for(coro, timeout=30, loop=self.loop)
+                self._ws = await asyncio.wait_for(coro, timeout=20.0, loop=self.loop)
             except asyncio.CancelledError:
                 raise
             except (OSError,
