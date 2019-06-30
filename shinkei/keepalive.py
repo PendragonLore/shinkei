@@ -4,8 +4,8 @@ import asyncio
 import concurrent
 import json
 import logging
-import time
 import threading
+import time
 
 log = logging.getLogger(__name__)
 

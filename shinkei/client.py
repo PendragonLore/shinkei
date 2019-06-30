@@ -4,7 +4,6 @@ import asyncio
 import inspect
 import logging
 import traceback
-from collections import deque
 
 import aiohttp
 import websockets
@@ -36,7 +35,7 @@ class Client:
         self.tags = tags or []
 
         self.cache = cache
-        self._internal_cache = deque()
+        self._internal_cache = []
 
         self.session = session or aiohttp.ClientSession()
 
