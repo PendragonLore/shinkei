@@ -1,7 +1,7 @@
 import asyncio
+import uuid
 
 import shinkei
-import uuid
 
 
 async def main():

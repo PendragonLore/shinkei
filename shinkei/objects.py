@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 class Version:
     __slots__ = ("api", "singyeong")
 

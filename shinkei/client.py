@@ -1,12 +1,15 @@
+# -*- coding: utf-8 -*-
+
 import asyncio
-import aiohttp
-import uuid
 import inspect
+import uuid
+
+import aiohttp
 from yarl import URL
 
+from .exceptions import ShinkeiHTTPException
 from .gateway import WSClient
 from .objects import Version
-from .exceptions import ShinkeiHTTPException
 
 
 class Client:

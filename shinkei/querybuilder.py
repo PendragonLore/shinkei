@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 class QueryBuilder:
     __slots__ = ("_ops", "application_id", "restricted", "optional", "key")
 
