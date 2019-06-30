@@ -10,7 +10,7 @@ import logging
 
 from .client import Client, _ClientMixin
 from .exceptions import *
-from .objects import Version
+from .objects import Version, MetadataPayload
 from .querybuilder import Node, QueryBuilder
 
 
