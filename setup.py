@@ -2,6 +2,7 @@
 
 import pathlib
 import re
+
 from setuptools import setup
 
 ROOT = pathlib.Path(__file__).parent

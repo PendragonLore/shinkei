@@ -11,7 +11,7 @@ import logging
 from .client import Client
 from .exceptions import *
 from .objects import Version
-from .querybuilder import QueryBuilder
+from .querybuilder import Node, QueryBuilder
 
 try:
     from logging import NullHandler
