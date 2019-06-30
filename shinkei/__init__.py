@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-__title__ = "discord"
-__author__ = "Rapptz"
+__title__ = "shinkei"
+__author__ = "Lorenzo"
 __license__ = "MIT"
 __copyright__ = "Copyright 2019 Lorenzo"
 __version__ = "0.0.1a"
