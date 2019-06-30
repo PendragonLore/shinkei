@@ -78,6 +78,8 @@ class QueryBuilder:
 
 
 class Node:
+    __slots__ = ("_ops",)
+
     def __init__(self):
         self._ops = []
 

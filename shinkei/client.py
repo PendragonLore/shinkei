@@ -2,45 +2,46 @@
 
 import asyncio
 import inspect
+import logging
+import traceback
 import uuid
 
 import aiohttp
+import websockets
 from yarl import URL
 
+from .backoff import ExponentialBackoff
 from .exceptions import ShinkeiHTTPException
-from .gateway import WSClient
+from .gateway import ShinkeiResumeWS, ShinkeiWSClosed, WSClient
 from .objects import Version
+
+log = logging.getLogger(__name__)
 
 
 class Client:
     __slots__ = (
-        "loop",
         "password",
         "id",
+        "loop",
         "app_id",
         "session",
         "rest_uri",
-        "version", "_ws",
+        "ws_url",
+        "version",
+        "reconnect",
+        "_ws",
         "schema_map",
-        "bot"
+        "_task"
     )
 
     listeners = []
 
     def __init__(self):
-        self.password: str
-        self.id: str
-        self.app_id: str
-
-        self._ws: WSClient
-        self.loop: asyncio.AbstractEventLoop
-        self.session: aiohttp.ClientSession
-
         self.schema_map = {"singyeong": "ws", "ssingyeong": "wss"}
 
     @classmethod
-    async def connect(cls, dns, rest_dns, application_id, client_id=None, password=None, *, reconnect=True,
-                      session=None, loop=None):
+    async def _connect(cls, dns, rest_dns, application_id, client_id=None, password=None, *, reconnect=True,
+                       session=None, loop=None):
         self = cls()
 
         self.loop = loop or asyncio.get_event_loop()
@@ -60,14 +61,20 @@ class Client:
 
         self.rest_uri = self.rest_uri / self.version.api
 
-        self._ws = await WSClient.create(self, ws_url.with_scheme(scheme).human_repr(), reconnect=reconnect)
+        self.ws_url = ws_url.with_scheme(scheme)
+        self.reconnect = reconnect
+
+        coro = WSClient.create(self, self.ws_url.human_repr(), reconnect=self.reconnect)
+        self._ws = await asyncio.wait_for(coro, timeout=30, loop=self.loop)
+
+        self._task = self.loop.create_task(self._poll_data())
 
         return self
 
     async def close(self):
         await self.session.close()
-        self._ws._poll_task.cancel()
         self._ws.keep_alive.stop()
+        self._task.cancel()
         await self._ws.close(1000)
 
     async def _fetch_version(self):
@@ -78,12 +85,7 @@ class Client:
             return Version(data=await request.json())
 
     async def discover(self, tags):
-        async with self.session.get(self.rest_uri / "discovery" / "tags", params={"q": str(tags)},
-                                    headers={"Authorization": str(self.password)}) as request:
-            if not request.status == 200:
-                raise ShinkeiHTTPException(request, request.status, "Was not able to fetch application id by tags.")
-
-            return (await request.json())["result"]
+        raise NotImplementedError()
 
     async def send(self, data, *, target, nonce=None):
         return await self._ws.send_metadata(data, target=target, nonce=nonce)
@@ -98,3 +100,64 @@ class Client:
             return func
 
         return wrapper
+
+    async def _poll_data(self):
+        backoff = ExponentialBackoff()
+
+        while True:
+            try:
+                await self._ws.poll_event()
+            except ShinkeiResumeWS:
+                log.info("GOODBYE received, trying to reconnect.")
+                coro = WSClient.create(self, self.ws_url.human_repr(), reconnect=self.reconnect)
+
+                self._ws = await asyncio.wait_for(coro, timeout=30, loop=self.loop)
+            except asyncio.CancelledError:
+                raise
+            except (OSError,
+                    asyncio.TimeoutError,
+                    websockets.InvalidHandshake,
+                    websockets.WebSocketProtocolError,
+                    ShinkeiWSClosed) as exc:
+                if not self.reconnect:
+                    if isinstance(exc, ShinkeiWSClosed) and exc.code == 1000:
+                        return
+                    await self.close()
+                    traceback.print_exc()
+                    raise
+
+                if isinstance(exc, ShinkeiWSClosed):
+                    if not exc.code == 1000:
+                        await self.close()
+                        traceback.print_exc()
+                        raise
+                    return
+
+                delay = backoff.delay()
+
+                log.debug("Trying to reconnect in %.2fs.", delay)
+
+                await asyncio.sleep(delay)
+            except Exception:
+                traceback.print_exc()
+
+
+class _ClientMixin:
+    __slots__ = ("_args", "_kwargs", "_client")
+
+    def __init__(self, *args, **kwargs):
+        self._args = args
+        self._kwargs = kwargs
+
+        self._client = None
+
+    def __await__(self):
+        return Client._connect(*self._args, **self._kwargs).__await__()
+
+    async def __aenter__(self):
+        self._client = await Client._connect(*self._args, **self._kwargs)
+
+        return self._client
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self._client.close()

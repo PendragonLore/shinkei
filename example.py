@@ -5,17 +5,13 @@ import shinkei
 
 
 async def main():
-    client = await shinkei.Client.connect("singyeong://localhost:4567", rest_dns="http://localhost:4567",
-                                          application_id="my-cool-app", client_id=uuid.uuid4().hex)
+    async with shinkei.connect("singyeong://localhost:4567", rest_dns="http://localhost:4567",
+                               application_id="my-cool-app", client_id=uuid.uuid4().hex) as client:
+        target = shinkei.QueryBuilder(application="my-cool-app", key="uniquekey", optional=True).eq("key1", "hithere")
 
-    # optional will always return the data regardless if the query was successful
-    target = shinkei.QueryBuilder(application_id="my-cool-app", key="uniquekey", optional=True).eq("key1", "hithere")
-    for _ in range(5):
         await client.send({"somekey": "somevalue"}, target=target)
 
-        await asyncio.sleep(20)
-
-    await client.close()
+        await asyncio.sleep(5)
 
 
 @shinkei.Client.listen()

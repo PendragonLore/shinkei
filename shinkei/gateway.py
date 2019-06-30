@@ -2,11 +2,10 @@
 
 import json
 import logging
-import traceback
 
 import websockets
 
-from .exceptions import ShinkeiWSException
+from .exceptions import ShinkeiResumeWS, ShinkeiWSClosed, ShinkeiWSException
 from .keepalive import KeepAlivePls
 
 log = logging.getLogger(__name__)
@@ -22,24 +21,6 @@ class WSClient(websockets.WebSocketClientProtocol):
     OP_HEARTBEAT_ACK = 6
     OP_GOODBYE = 7
 
-    async def recv_json(self):
-        return json.loads(await self.recv())
-
-    async def send_json(self, data):
-        log.debug("Sending payload %s", data)
-        return await self.send(json.dumps(data))
-
-    async def identify(self):
-        return await self.send_json({
-            "op": self.OP_IDENTIFY,
-            "d": {
-                "client_id": self.client_id,
-                "application_id": self.app_id,
-                "reconnect": self.reconnect,
-                "auth": self.password
-            }
-        })
-
     @classmethod
     async def create(cls, client, dns, reconnect):
         ws = await websockets.connect(dns, klass=cls)
@@ -51,37 +32,45 @@ class WSClient(websockets.WebSocketClientProtocol):
         ws.app_id = client.app_id
         ws.reconnect = reconnect
 
-        heartbeat_payload = await ws.recv_json()
-
-        ws.hb_interval = heartbeat_payload["d"]["heartbeat_interval"] / 1000
-        ws._poll_task = ws.loop.create_task(ws.poll_data())
+        await ws.poll_event()
 
         await ws.identify()
+
+        await ws.poll_event()
 
         ws.keep_alive = KeepAlivePls(ws=ws)
         ws.keep_alive.start()
 
         return ws
 
+    async def poll_event(self):
+        try:
+            data = await self.recv_json()
+            log.debug("Received payload %s", data)
+            await self.parse_payload(data)
+        except websockets.exceptions.ConnectionClosed as exc:
+            if exc.code not in {1000, 4004, 4010, 4011}:
+                raise ShinkeiResumeWS(f"Disconnected with code {exc.code}, trying to reconnect.")
+            else:
+                raise ShinkeiWSClosed(f"Disconnected with code {exc.code}.", exc.code)
+
     async def parse_payload(self, data):
         op = data["op"]
 
-        if op == self.OP_GOODBYE:
-            if not self.reconnect:
-                logging.info("Received GOODBYE payload, disconnecting.")
-                return await self.client.close()
-            raise NotImplementedError("Reconnection logic not implemented yet.")
+        if op == self.OP_READY:
+            return
 
-        if op in {self.OP_READY, self.OP_HELLO}:
+        if op == self.OP_GOODBYE:
+            raise ShinkeiResumeWS("Received GOODBYE")
+
+        if op == self.OP_HEARTBEAT_ACK:
+            self.keep_alive.ack()
             return
 
         d = data["d"]
 
-        if op == self.OP_HEARTBEAT_ACK:
-            if not d["client_id"] == self.client_id:
-                raise ShinkeiWSException("Heartbeat received did not have the same client id as the gateway. "
-                                         "(local: {0} from heartbeat: {1})".format(self.client_id, d["client_id"]))
-            self.keep_alive.ack()
+        if op == self.OP_HELLO:
+            self.hb_interval = d["heartbeat_interval"] / 1000
             return
 
         if op == self.OP_INVALID:
@@ -96,8 +85,23 @@ class WSClient(websockets.WebSocketClientProtocol):
 
             return
 
+        log.warning("Unhandled OP %d with payload %s", op, data)
+
+    async def identify(self):
+        payload = {
+            "op": self.OP_IDENTIFY,
+            "d": {
+                "client_id": self.client_id,
+                "application_id": self.app_id,
+                "reconnect": self.reconnect,
+                "auth": self.password
+            }
+        }
+        log.warning("Sending IDENTIFY payload")
+        return await self.send_json(payload)
+
     async def send_metadata(self, data, *, target, nonce=None):
-        return await self.send_json({
+        payload = {
             "op": self.OP_DISPATCH,
             "d": {
                 "nonce": nonce,
@@ -106,15 +110,13 @@ class WSClient(websockets.WebSocketClientProtocol):
                 "payload": data,
             },
             "t": "SEND"
-        })
+        }
+        log.debug("Dispatching SEND with payload %s", payload)
+        return await self.send_json(payload)
 
-    async def poll_data(self):
-        while True:
-            data = await self.recv_json()
+    async def recv_json(self):
+        return json.loads(await self.recv())
 
-            log.debug("Received payload %s", data)
-
-            try:
-                await self.parse_payload(data)
-            except Exception:
-                traceback.print_exc()
+    async def send_json(self, data):
+        log.debug("Sending payload %s", data)
+        return await self.send(json.dumps(data))
