@@ -31,12 +31,14 @@ class Client:
         "reconnect",
         "_ws",
         "schema_map",
-        "_task"
+        "_task",
+        "_closed_event"
     )
 
     listeners = []
 
     def __init__(self):
+        self._closed_event = asyncio.Event()
         self.schema_map = {"singyeong": "ws", "ssingyeong": "wss"}
 
     @classmethod
@@ -71,10 +73,14 @@ class Client:
 
         return self
 
+    @property
+    def is_closed(self):
+        return self._closed_event.is_set()
+
     async def close(self):
+        self._closed_event.set()
         await self.session.close()
         self._ws.keep_alive.stop()
-        self._task.cancel()
         await self._ws.close(1000)
 
     async def _fetch_version(self):
@@ -120,24 +126,24 @@ class Client:
                     websockets.WebSocketProtocolError,
                     ShinkeiWSClosed) as exc:
                 if not self.reconnect:
+                    await self.close()
                     if isinstance(exc, ShinkeiWSClosed) and exc.code == 1000:
                         return
-                    await self.close()
                     traceback.print_exc()
                     raise
+
+                if self.is_closed:
+                    return
 
                 if isinstance(exc, ShinkeiWSClosed):
                     if not exc.code == 1000:
                         await self.close()
                         traceback.print_exc()
                         raise
-                    return
 
                 delay = backoff.delay()
-
                 log.debug("Trying to reconnect in %.2fs.", delay)
-
-                await asyncio.sleep(delay)
+                await asyncio.sleep(delay, loop=self.loop)
             except Exception:
                 traceback.print_exc()
 
