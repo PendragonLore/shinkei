@@ -110,16 +110,20 @@ class Client:
                 if not self.reconnect:
                     await self.close()
                     if isinstance(exc, ShinkeiWSClosed) and exc.code == 1000:
+                        log.info("Websocket closed successfully.")
                         return
+                    log.warning("Websocket closed forcefully.")
                     traceback.print_exc()
                     raise
 
                 if self.is_closed:
+                    log.info("Websocket closed successfully.")
                     return
 
                 if isinstance(exc, ShinkeiWSClosed):
                     if not exc.code == 1000:
                         await self.close()
+                        log.warning("Websocket closed forcefully.")
                         traceback.print_exc()
                         raise
 
