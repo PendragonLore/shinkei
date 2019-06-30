@@ -32,7 +32,7 @@ if version.endswith(("a", "b", "rc")):
     except Exception:
         pass
 
-with open("README.md") as f:
+with open(ROOT / "README.md") as f:
     readme = f.read()
 
 setup(
