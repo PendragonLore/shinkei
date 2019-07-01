@@ -203,7 +203,7 @@ class Client:
               },
             }
 
-        ``data`` keys cannot be one of ``ip``, ``restricted`` or
+        ``data`` keys cannot be one of ``ip``, ``restricted``, ``encoding`` or ``last_heartbeat_time``.
 
         Arguments
         ---------
