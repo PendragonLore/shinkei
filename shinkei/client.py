@@ -5,26 +5,31 @@ import inspect
 import logging
 import traceback
 
-import aiohttp
 import websockets
 from yarl import URL
 
+from .api import APIClient
 from .backoff import ExponentialBackoff
 from .gateway import ShinkeiResumeWS, ShinkeiWSClosed, WSClient
 
 log = logging.getLogger(__name__)
 
 
+def connect(*args, **kwargs):
+    return _ClientMixin(*args, **kwargs)
+
+
 class Client:
     listeners = []
 
     def __init__(self):
+        self.restricted = None
         self._closed_event = asyncio.Event()
         self.schema_map = {"singyeong": "ws", "ssingyeong": "wss"}
 
     @classmethod
-    async def _connect(cls, dns, application_id, client_id, password=None, *, reconnect=True,
-                       session=None, loop=None, tags=None, cache=True):
+    async def _connect(cls, dns, rest_dns, application_id, client_id, password=None, *, reconnect=True,
+                       session=None, loop=None, tags=None):
         self = cls()
 
         self.loop = loop or asyncio.get_event_loop()
@@ -34,10 +39,7 @@ class Client:
         self.app_id = application_id
         self.tags = tags or []
 
-        self.cache = cache
         self._internal_cache = []
-
-        self.session = session or aiohttp.ClientSession()
 
         ws_url = URL(dns).with_query("encoding=json") / "gateway" / "websocket"
         scheme = self.schema_map.get(ws_url.scheme, ws_url.scheme)
@@ -47,6 +49,10 @@ class Client:
 
         coro = WSClient.create(self, self.ws_url.human_repr(), reconnect=self.reconnect)
         self._ws = await asyncio.wait_for(coro, timeout=20)
+
+        self._rest = await APIClient.create(rest_dns, session=session, password=password)
+
+        self.version = self._rest.version
 
         self._task = self.loop.create_task(self._poll_data())
 
@@ -62,7 +68,8 @@ class Client:
 
     async def close(self):
         self._closed_event.set()
-        await self.session.close()
+        if not self._rest.session.closed:
+            await self._rest.session.close()
         self._ws.keep_alive.stop()
         await self._ws.close(1000)
 
@@ -75,6 +82,14 @@ class Client:
     async def update_metadata(self, data):
         return await self._ws.update_metadata(data)
 
+    async def proxy_request(self, method, route, application, *, ops):
+        return await self._rest.proxy(method, route, application, ops)
+
+    async def discover(self, tags):
+        ret = await self._rest.discovery_tags(tags)
+
+        return ret.get("result")
+
     @classmethod
     def listen(cls):
         def wrapper(func):
@@ -86,27 +101,35 @@ class Client:
 
         return wrapper
 
+    async def _do_poll(self):
+        try:
+            await self._ws.poll_event()
+        except ShinkeiResumeWS:
+            if not self.reconnect:
+                log.info("GOODBYE received, disconnected")
+                self._task.cancel()
+                await self.close()
+                return
+            log.info("GOODBYE received, trying to reconnect.")
+            coro = WSClient.create(self, self.ws_url.human_repr(), reconnect=self.reconnect)
+
+            self._ws = await asyncio.wait_for(coro, timeout=20.0, loop=self.loop)
+
     async def _poll_data(self):
         backoff = ExponentialBackoff()
 
         while True:
             try:
-                await self._ws.poll_event()
-            except ShinkeiResumeWS:
-                if not self.reconnect:
-                    log.info("GOODBYE received, disconnected")
-                    return
-                log.info("GOODBYE received, trying to reconnect.")
-                coro = WSClient.create(self, self.ws_url.human_repr(), reconnect=self.reconnect)
-
-                self._ws = await asyncio.wait_for(coro, timeout=20.0, loop=self.loop)
+                await self._do_poll()
             except asyncio.CancelledError:
                 raise
             except (OSError,
+                    ValueError,
                     asyncio.TimeoutError,
                     websockets.InvalidHandshake,
                     websockets.WebSocketProtocolError,
-                    ShinkeiWSClosed) as exc:
+                    ShinkeiWSClosed,
+                    websockets.InvalidMessage) as exc:
                 if not self.reconnect:
                     await self.close()
                     if isinstance(exc, ShinkeiWSClosed) and exc.code == 1000:

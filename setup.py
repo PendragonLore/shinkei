@@ -50,9 +50,11 @@ setup(
     },
     version=version,
     packages=["shinkei"],
+    platforms=["any"],
     python_requires=">=3.6.0",
     include_package_data=True,
     install_requires=requirements,
+    keywords="ipc, asyncio, singyeong",
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Framework :: AsyncIO",

@@ -53,17 +53,11 @@ class WSClient(websockets.WebSocketClientProtocol):
                 raise ShinkeiResumeWS(f"Disconnected with code {exc.code}, trying to reconnect.")
             else:
                 raise ShinkeiWSClosed(f"Disconnected with code {exc.code}.", exc.code)
+        except (websockets.exceptions.InvalidMessage, ValueError):
+            log.info(":thinking:")
 
     async def parse_payload(self, data):
         op = data["op"]
-
-        if op == self.OP_READY:
-            cache = self.client._internal_cache
-            if cache:
-                log.info("Refreshing metadata, probably due to a reconnect (%d entries)", len(cache))
-                for payload in cache:
-                    await self.update_metadata(payload)
-            return
 
         if op == self.OP_GOODBYE:
             raise ShinkeiResumeWS("Received GOODBYE")
@@ -76,6 +70,15 @@ class WSClient(websockets.WebSocketClientProtocol):
 
         if op == self.OP_HELLO:
             self.hb_interval = d["heartbeat_interval"] / 1000
+            return
+
+        if op == self.OP_READY:
+            self.client.restricted = d["restricted"]
+            cache = self.client._internal_cache
+            if cache:
+                log.info("Refreshing metadata, probably due to a reconnect (%d entries)", len(cache))
+                for payload in cache:
+                    await self.update_metadata(payload, cache=False)
             return
 
         if op == self.OP_INVALID:
@@ -135,13 +138,13 @@ class WSClient(websockets.WebSocketClientProtocol):
         }
         return await self.send_json(payload)
 
-    async def update_metadata(self, data):
+    async def update_metadata(self, data, *, cache=True):
         payload = {
             "op": self.OP_DISPATCH,
             "t": "UPDATE_METADATA",
             "d": data,
         }
-        if self.client.cache:
+        if cache:
             self.client._internal_cache.append(data)
         return await self.send_json(payload)
 

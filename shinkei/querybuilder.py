@@ -29,13 +29,13 @@ class QueryBuilder:
 
         return self
 
-    def _multiple_stategy(self, key, builder):
+    def _multiple_stategy(self, op, key, builder):
         if not isinstance(builder, Node):
             raise TypeError("builder must be of type Node (got {0})", type(builder).__name__)
         if not builder._ops:
             raise TypeError("Node provided doesn't have any OPs.")
 
-        self._ops.append({key: builder.to_json()})
+        self._ops.append({key: {f"${op}": builder.to_json()}})
 
         return self
 
@@ -70,7 +70,13 @@ class QueryBuilder:
         return self._single_strategy("ncontains", key, value)
 
     def also(self, key, node):
-        return self._multiple_stategy(key, node)
+        return self._multiple_stategy("and", key, node)
+
+    def either(self, key, node):
+        return self._multiple_stategy("or", key, node)
+
+    def neither(self, key, node):
+        return self._multiple_stategy("nor", key, node)
 
     def to_json(self):
         return {"ops": self._ops, "key": self.key,

@@ -5,8 +5,8 @@ import shinkei
 
 
 async def main():
-    async with shinkei.connect("singyeong://localhost:4567", application_id="my-cool-app",
-                               client_id=uuid.uuid4().hex, tags=["uwu", "eew"]) as conn:
+    async with shinkei.connect("singyeong://0.0.0.0:4567", rest_dns="http://localhost:4567",
+                               application_id="my-cool-app", client_id=uuid.uuid4().hex, tags=["hi"]) as conn:
         # set some basic metadata
         await conn.update_metadata({"hi": {"type": "integer", "value": 123}})
 
@@ -15,7 +15,7 @@ async def main():
         target = shinkei.QueryBuilder(application="my-cool-app", key="uniquekey", optional=False).eq("hi", 123)
         await conn.send("Hi me!", target=target)
 
-        await asyncio.sleep(2)
+        await asyncio.sleep(5)
 
 
 @shinkei.Client.listen()
