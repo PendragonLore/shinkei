@@ -13,7 +13,7 @@ async def main():
         target = shinkei.QueryBuilder(application="my-cool-app", key="uniquekey").eq("receiver_id", 1)
 
         for number in range(10):
-            await conn.send("Hi me! (send number {0})".format(number), target=target)
+            await conn.send("Hi! (send number {0})".format(number), target=target)
 
             await asyncio.sleep(5)
 
