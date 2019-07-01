@@ -36,6 +36,12 @@ if version.endswith(("a", "b", "rc")):
 with open(ROOT / "README.md") as f:
     readme = f.read()
 
+extras = {
+    "docs": [
+        "sphinx",
+        "sphinxcontrib_trio"
+    ]
+}
 setup(
     name="shinkei",
     author="Lorenzo",
@@ -54,6 +60,7 @@ setup(
     python_requires=">=3.6.0",
     include_package_data=True,
     install_requires=requirements,
+    extras_require=extras,
     keywords="ipc, asyncio, singyeong",
     classifiers=[
         "License :: OSI Approved :: MIT License",

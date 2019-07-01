@@ -6,7 +6,8 @@ import shinkei
 
 async def main():
     async with shinkei.connect("singyeong://localhost:4567", rest_dns="http://localhost:4567",
-                               application_id="my-cool-app", client_id=uuid.uuid4().hex, tags=["hi"]) as conn:
+                               application_id="my-cool-app", client_id=uuid.uuid4().hex, tags=["hi"],
+                               auth="2d1e29fbe6895b3693112ff<insert more long password here>") as conn:
         # set some basic metadata
         await conn.update_metadata({"hi": {"type": "integer", "value": 123}})
 

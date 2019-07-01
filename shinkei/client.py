@@ -15,31 +15,117 @@ from .gateway import ShinkeiResumeWS, ShinkeiWSClosed, WSClient
 log = logging.getLogger(__name__)
 
 
-def connect(*args, **kwargs):
-    return _ClientMixin(*args, **kwargs)
+def connect(dns, rest_dns, application_id, client_id, auth=None, *, tags=None, reconnect=True, session=None, loop=None):
+    r"""Connect to singyeong.
+
+    Since this returns a context manager mixin of :class:`Client`, both
+
+    .. code-block:: python3
+
+        async with shinkei.connect(*args, **kwargs):
+            # ....
+
+    and
+
+    .. code-block:: python3
+
+        client = await shinkei.connect(*args, **kwargs):
+
+        try:
+            # ...
+        finally:
+            await client.close()
+
+    are valid and do the same thing.
+
+    Arguments
+    ---------
+    dns: :class:`str`
+        The base dns for the WebSocket url.
+    rest_dns: :class:`str`
+        The base dns for the REST url.
+    application_id: :class:`str`
+        A unique id which should be shared among all related clients.
+    client_id: :class:`str`
+        An id unique across all clients connected to the same application.
+    auth: Optional[:class:`str`]
+        A password used to access the server.
+        If an incorrect password is sent the client will be in restricted mode.
+        Defaults to ``None``
+    tags: Optional[:class:`list`]
+        A list of tags to identify the client and to allow the discovery of it's application id.
+    reconnect: Optional[:class:`bool`]
+        Whether or not to reconnect when singyeong sends a GOODBYE payload or when the
+        WebSocket disconnects for other reasons.
+        Defaults to ``True``
+    session: Optional[:class:`aiohttp.ClientSession`]
+        The session used for HTTP requests.
+        If none is provided, a new one will be created.
+    loop: Optional[:class:`asyncio.AbstractEventLoop`]
+        The loop used to connect to the websocket and make HTTP requests.
+        If non is provided, :func:`asyncio.get_event_loop` will be used to get one.
+
+    Returns
+    -------
+    A context manager mixin of :class:`Client`
+        The client."""
+    return _ClientMixin(dns, rest_dns, application_id, client_id, auth, reconnect=reconnect,
+                        session=session, loop=loop, tags=tags)
 
 
 class Client:
+    """The main client connecting to singyeong.
+
+    This is not supposed to be instantiated manually
+    but through :func:`connect`
+
+    Attributes
+    ----------
+    loop: :class:`asyncio.AbstractEventLoop`
+        The loop used to connect to the websocket make HTTP requests.
+    session: :class:`aiohttp.ClientSession`
+        The aiohttp session used for HTTP requests.
+    restricted: :class:`bool`
+        Whether or not the client is restricted.
+        A client is restricted usually when it fails to provide
+        the right password.
+    version: :class:`Version`
+        A :class:`Version` object representing the singyeong and api version."""
     listeners = []
 
     def __init__(self):
+        # so pycharm doesn't complain lol
+        self.loop = None
+        self.session = None
+
         self.restricted = None
+        self.password = None
+        self.id = None
+        self.app_id = None
+        self.tags = None
+        self.ws_url = None
+        self.reconnect = None
+        self.version = None
+
+        self._task = None
+        self._ws = None
+        self._rest = None
+
+        self._internal_cache = []
         self._closed_event = asyncio.Event()
         self.schema_map = {"singyeong": "ws", "ssingyeong": "wss"}
 
     @classmethod
-    async def _connect(cls, dns, rest_dns, application_id, client_id, password=None, *, reconnect=True,
+    async def _connect(cls, dns, rest_dns, application_id, client_id, auth=None, *, reconnect=True,
                        session=None, loop=None, tags=None):
         self = cls()
 
         self.loop = loop or asyncio.get_event_loop()
 
-        self.password = password
+        self.auth = auth
         self.id = client_id
         self.app_id = application_id
         self.tags = tags or []
-
-        self._internal_cache = []
 
         ws_url = URL(dns).with_query("encoding=json") / "gateway" / "websocket"
         scheme = self.schema_map.get(ws_url.scheme, ws_url.scheme)
@@ -50,7 +136,7 @@ class Client:
         coro = WSClient.create(self, self.ws_url.human_repr(), reconnect=self.reconnect)
         self._ws = await asyncio.wait_for(coro, timeout=20)
 
-        self._rest = await APIClient.create(rest_dns, session=session, password=password)
+        self._rest = await APIClient.create(rest_dns, session=session, auth=auth, loop=self.loop)
 
         self.version = self._rest.version
 
@@ -59,39 +145,140 @@ class Client:
         return self
 
     @property
-    def is_closed(self):
+    def is_closed(self) -> bool:
+        """:class:`bool`: Whether or not the client is closed."""
         return self._closed_event.is_set()
 
     @property
     def latency(self):
+        """:class:`float`: The latency, is seconds, between heartbeats."""
         return self._ws.keep_alive.latency
 
-    async def close(self):
-        self._closed_event.set()
-        if not self._rest.session.closed:
-            await self._rest.session.close()
-        self._ws.keep_alive.stop()
-        await self._ws.close(1000)
-
     async def send(self, data, *, target, nonce=None):
+        """Send data to a client which matches the predicates of the ``target`` query.
+
+        Arguments
+        ---------
+        data: Union[:class:`str`, :class:`int`, :class:`float`, :class:`list`, :class:`dict`]
+            The data to send.
+            Must be JSON serializable.
+        target: :class:`QueryBuilder`
+            The query that is used to match the client.
+        nonce
+            A value used to identify the data sent."""
         return await self._ws.send_metadata(data, target=target, nonce=nonce)
 
     async def broadcast(self, data, *, target, nonce=None):
+        """Send data to all clients which matches the predicates of the ``target`` query.
+
+        Arguments
+        ---------
+        data: Union[:class:`str`, :class:`int`, :class:`float`, :class:`list`, :class:`dict`]
+            The data to send.
+            Must be JSON serializable.
+        target: :class:`QueryBuilder`
+            The query that is used to match the clients.
+        nonce
+            A value used to identify the data sent."""
         return await self._ws.broadcast_metadata(data, target=target, nonce=nonce)
 
-    async def update_metadata(self, data):
-        return await self._ws.update_metadata(data)
+    async def update_metadata(self, data, *, cache=True):
+        """Update metadata on singyeong.
 
-    async def proxy_request(self, method, route, application, *, ops):
-        return await self._rest.proxy(method, route, application, ops)
+        The data is not consistent between server restarts but
+        if ``cache`` is set to ``True`` then it will be persist between restarts.
+
+        ``data`` must have a structure similar to the following dictionary:
+
+        .. code-block:: python3
+
+            {
+              "key": {
+                "value": "hi!",
+                "type": "string",
+              },
+              "key2": {
+                "value": 123,
+                "type": "integer",
+              },
+            }
+
+        ``data`` keys cannot be one of ``ip``, ``restricted`` or
+
+        Arguments
+        ---------
+        data: :class:`dict`
+            The metadata to update.
+            Must be JSON serializable.
+        cache: :class:`bool`
+            Whether or not to cache the metadata and send it back on reconnects.
+
+        Raises
+        ------
+        ShinkeiWSException
+            The metadata structure was invalid or a restricted key was used."""
+        return await self._ws.update_metadata(data, cache=cache)
+
+    async def proxy_request(self, method, route, application, *, target):
+        """Make a proxy HTTP request to a client.
+
+        Arguments
+        ---------
+        method: :class:`str`
+            The HTTP method to use.
+            Currently only supports GET (I think).
+        route: :class:`str`
+            The route to make the request to.
+        application: :class:`str`
+            The application identifier.
+        target: :class:`QueryBuilder`
+            The query that is used to match the client.
+
+        Returns
+        -------
+        The HTTP response.
+
+        Raises
+        ------
+        ShinkeiHTTPException
+            The HTTP proxy request failed."""
+        return await self._rest.proxy(method, route, application, target)
 
     async def discover(self, tags):
+        """Discover an application id by it's clients tags.
+
+        Arguments
+        ---------
+        tags: :class:`list`
+            The list of tags an application client must have to match
+
+        Returns
+        -------
+        :class:`list`
+            A list of application ids matching.
+
+        Raises
+        ------
+        TypeError
+            The ``tags`` argument wasn't a :class:`list`."""
         ret = await self._rest.discovery_tags(tags)
 
         return ret.get("result")
 
     @classmethod
     def listen(cls):
+        """A decorator which adds a coroutine function to the client which will be called
+        when it receives data as :class:`MetadataPayload`.
+
+        Note
+        ----
+        The list of coroutines is bound to the *class*, not to the *instance*.
+
+        Raises
+        ------
+        TypeError
+            The function was not a coroutine."""
+
         def wrapper(func):
             if not inspect.iscoroutinefunction(func):
                 raise TypeError("Callback must be a coroutine.")
@@ -100,6 +287,14 @@ class Client:
             return func
 
         return wrapper
+
+    async def close(self):
+        """Close the connection to singyeong."""
+        self._closed_event.set()
+        if not self._rest.session.closed:
+            await self._rest.session.close()
+        self._ws.keep_alive.stop()
+        await self._ws.close(1000)
 
     async def _do_poll(self):
         try:

@@ -23,11 +23,11 @@ class WSClient(websockets.WebSocketClientProtocol):
     OP_GOODBYE = 7
 
     @classmethod
-    async def create(cls, client, dns, reconnect):
-        ws = await websockets.connect(dns, create_protocol=cls)
+    async def create(cls, client, dns, *, reconnect):
+        ws = await websockets.connect(dns, create_protocol=cls, loop=client.loop)
 
         ws.client = client
-        ws.password = client.password
+        ws.auth = client.auth
         ws.client_id = client.id
         ws.app_id = client.app_id
         ws.tags = client.tags
@@ -100,11 +100,11 @@ class WSClient(websockets.WebSocketClientProtocol):
                 "client_id": self.client_id,
                 "application_id": self.app_id,
                 "reconnect": self.reconnect,
-                "tags": self.tags
+                "tags": self.tags,
             }
         }
-        if self.password:
-            payload["auth"] = self.password
+        if self.auth is not None:
+            payload["d"]["auth"] = self.auth
         log.info("Sending IDENTIFY payload")
         await self.send_json(payload)
 

@@ -18,15 +18,15 @@ class APIClient:
         self.session = None
 
     @classmethod
-    async def create(cls, dns, *, session=None, password=None):
+    async def create(cls, dns, *, session, auth, loop):
         self = cls()
 
-        self.session = session or aiohttp.ClientSession()
+        self.session = session or aiohttp.ClientSession(loop=loop)
         self.url = URL(dns) / "api"
-        self.password = password
+        self.auth = auth
 
-        if self.password:
-            self.headers["Authorization"] = password
+        if self.auth:
+            self.headers["Authorization"] = auth
 
         self.version = Version(await self._fetch_version())
 
@@ -58,13 +58,13 @@ class APIClient:
 
         return await self.request("GET", url)
 
-    async def proxy(self, method, route, application, ops):
+    async def proxy(self, method, route, application, target):
         payload = {
             "method": method,
             "route": route,
             "query": {
                 "application": application,
-                "ops": ops.to_json()
+                "ops": target.to_json()
             }
         }
 
