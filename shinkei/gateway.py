@@ -53,8 +53,6 @@ class WSClient(websockets.WebSocketClientProtocol):
                 raise ShinkeiResumeWS(f"Disconnected with code {exc.code}, trying to reconnect.")
             else:
                 raise ShinkeiWSClosed(f"Disconnected with code {exc.code}.", exc.code)
-        except (websockets.exceptions.InvalidMessage, ValueError):
-            log.info(":thinking:")
 
     async def parse_payload(self, data):
         op = data["op"]
