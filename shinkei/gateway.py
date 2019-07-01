@@ -100,13 +100,15 @@ class WSClient(websockets.WebSocketClientProtocol):
             raise ShinkeiWSException(msg)
 
         if op == self.OP_DISPATCH:
-            listeners = self.client.listeners
-            for coro in listeners:
-                self.loop.create_task(coro(MetadataPayload(d)))
+            self._dispatch(MetadataPayload(d))
 
             return
 
         log.warning("Unhandled OP %d with payload %s", op, data)
+
+    def _dispatch(self, data):
+        for coro in self.client.listeners:
+            self.loop.create_task(coro(data))
 
     async def identify(self):
         payload = {

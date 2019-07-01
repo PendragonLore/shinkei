@@ -15,7 +15,8 @@ from .gateway import ShinkeiResumeWS, ShinkeiWSClosed, WSClient
 log = logging.getLogger(__name__)
 
 
-def connect(url, rest_url, application_id, client_id, auth=None, *, tags=None, reconnect=True, session=None, loop=None):
+def connect(url, rest_url, application_id, client_id, auth=None, *,
+            tags=None, reconnect=True, session=None, loop=None, klass=None):
     """Connect to singyeong.
 
     Since this returns a context manager mixin of :class:`Client`, both
@@ -64,13 +65,15 @@ def connect(url, rest_url, application_id, client_id, auth=None, *, tags=None, r
     loop: Optional[:class:`asyncio.AbstractEventLoop`]
         The loop used to connect to the websocket and make HTTP requests.
         If non is provided, :func:`asyncio.get_event_loop` will be used to get one.
-
+    klass: Optional[:class:`type`]
+        The classed used to instantiate the client.
+        Defaults to :class:`Client`
     Returns
     -------
     A context manager mixin of :class:`Client`
         The client."""
     return _ClientMixin(url, rest_url, application_id, client_id, auth, reconnect=reconnect,
-                        session=session, loop=loop, tags=tags)
+                        session=session, loop=loop, tags=tags, klass=klass)
 
 
 class Client:
@@ -353,19 +356,20 @@ class Client:
 
 
 class _ClientMixin:
-    __slots__ = ("_args", "_kwargs", "_client")
+    __slots__ = ("_args", "_kwargs", "_client", "_client_class")
 
     def __init__(self, *args, **kwargs):
+        self._client_class = kwargs.pop("klass", None) or Client
         self._args = args
         self._kwargs = kwargs
 
         self._client = None
 
     def __await__(self):
-        return Client._connect(*self._args, **self._kwargs).__await__()
+        return self._client_class._connect(*self._args, **self._kwargs).__await__()
 
     async def __aenter__(self):
-        self._client = await Client._connect(*self._args, **self._kwargs)
+        self._client = await self._client_class._connect(*self._args, **self._kwargs)
 
         return self._client
 
