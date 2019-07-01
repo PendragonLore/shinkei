@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 
 def connect(url, rest_url, application_id, client_id, auth=None, *, tags=None, reconnect=True, session=None, loop=None):
-    r"""Connect to singyeong.
+    """Connect to singyeong.
 
     Since this returns a context manager mixin of :class:`Client`, both
 
