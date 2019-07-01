@@ -15,7 +15,7 @@ from .gateway import ShinkeiResumeWS, ShinkeiWSClosed, WSClient
 log = logging.getLogger(__name__)
 
 
-def connect(dns, rest_dns, application_id, client_id, auth=None, *, tags=None, reconnect=True, session=None, loop=None):
+def connect(url, rest_url, application_id, client_id, auth=None, *, tags=None, reconnect=True, session=None, loop=None):
     r"""Connect to singyeong.
 
     Since this returns a context manager mixin of :class:`Client`, both
@@ -40,9 +40,9 @@ def connect(dns, rest_dns, application_id, client_id, auth=None, *, tags=None, r
 
     Arguments
     ---------
-    dns: :class:`str`
+    url: :class:`str`
         The base dns for the WebSocket url.
-    rest_dns: :class:`str`
+    rest_url: :class:`str`
         The base dns for the REST url.
     application_id: :class:`str`
         A unique id which should be shared among all related clients.
@@ -69,7 +69,7 @@ def connect(dns, rest_dns, application_id, client_id, auth=None, *, tags=None, r
     -------
     A context manager mixin of :class:`Client`
         The client."""
-    return _ClientMixin(dns, rest_dns, application_id, client_id, auth, reconnect=reconnect,
+    return _ClientMixin(url, rest_url, application_id, client_id, auth, reconnect=reconnect,
                         session=session, loop=loop, tags=tags)
 
 
@@ -116,7 +116,7 @@ class Client:
         self.schema_map = {"singyeong": "ws", "ssingyeong": "wss"}
 
     @classmethod
-    async def _connect(cls, dns, rest_dns, application_id, client_id, auth=None, *, reconnect=True,
+    async def _connect(cls, url, rest_url, application_id, client_id, auth=None, *, reconnect=True,
                        session=None, loop=None, tags=None):
         self = cls()
 
@@ -127,7 +127,7 @@ class Client:
         self.app_id = application_id
         self.tags = tags or []
 
-        ws_url = URL(dns).with_query("encoding=json") / "gateway" / "websocket"
+        ws_url = URL(url).with_query("encoding=json") / "gateway" / "websocket"
         scheme = self.schema_map.get(ws_url.scheme, ws_url.scheme)
 
         self.ws_url = ws_url.with_scheme(scheme)
@@ -136,7 +136,7 @@ class Client:
         coro = WSClient.create(self, self.ws_url.human_repr(), reconnect=self.reconnect)
         self._ws = await asyncio.wait_for(coro, timeout=20)
 
-        self._rest = await APIClient.create(rest_dns, session=session, auth=auth, loop=self.loop)
+        self._rest = await APIClient.create(rest_url, session=session, auth=auth, loop=self.loop)
 
         self.version = self._rest.version
 

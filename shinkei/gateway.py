@@ -36,8 +36,8 @@ class WSClient(websockets.WebSocketClientProtocol):
         super().__init__(*args, **kwargs)
 
     @classmethod
-    async def create(cls, client, dns, *, reconnect):
-        ws = await websockets.connect(dns, create_protocol=cls, loop=client.loop)
+    async def create(cls, client, url, *, reconnect):
+        ws = await websockets.connect(url, create_protocol=cls, loop=client.loop)
 
         ws.client = client
         ws.auth = client.auth

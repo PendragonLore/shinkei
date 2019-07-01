@@ -18,11 +18,11 @@ class APIClient:
         self.session = None
 
     @classmethod
-    async def create(cls, dns, *, session, auth, loop):
+    async def create(cls, url, *, session, auth, loop):
         self = cls()
 
         self.session = session or aiohttp.ClientSession(loop=loop)
-        self.url = URL(dns) / "api"
+        self.url = URL(url) / "api"
         self.auth = auth
 
         if self.auth:
