@@ -1,6 +1,4 @@
 div.sphinxsidebarwrapper {
     /* sticky sidebar */
     position: fixed;
-    height: 90%;
-    overflow: hidden;
 }

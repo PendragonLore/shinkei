@@ -97,5 +97,5 @@ intersphinx_mapping = {
 autodoc_member_order = "bysource"
 
 
-# def setup(app):
-#     app.add_stylesheet("style.css")
+def setup(app):
+    app.add_stylesheet("style.css")
