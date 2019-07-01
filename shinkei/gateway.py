@@ -22,6 +22,19 @@ class WSClient(websockets.WebSocketClientProtocol):
     OP_HEARTBEAT_ACK = 6
     OP_GOODBYE = 7
 
+    def __init__(self, *args, **kwargs):
+        # still here bc pycharm
+        self.client  = None
+        self.auth = None
+        self.client_id = None
+        self.app_id = None
+        self.tags = None
+        self.reconnect = None
+        self.keep_alive = None
+        self.hb_interval = None
+
+        super().__init__(*args, **kwargs)
+
     @classmethod
     async def create(cls, client, dns, *, reconnect):
         ws = await websockets.connect(dns, create_protocol=cls, loop=client.loop)
@@ -57,9 +70,6 @@ class WSClient(websockets.WebSocketClientProtocol):
     async def parse_payload(self, data):
         op = data["op"]
 
-        if op == self.OP_GOODBYE:
-            raise ShinkeiResumeWS("Received GOODBYE")
-
         if op == self.OP_HEARTBEAT_ACK:
             self.keep_alive.ack()
             return
@@ -70,8 +80,13 @@ class WSClient(websockets.WebSocketClientProtocol):
             self.hb_interval = d["heartbeat_interval"] / 1000
             return
 
+        if op == self.OP_GOODBYE:
+            raise ShinkeiResumeWS(f"Received GOODBYE (reason: {d.get('reason')})")
+
         if op == self.OP_READY:
-            self.client.restricted = d["restricted"]
+            self.client.restricted = restricted = d["restricted"]
+            if restricted:
+                log.warning("Client is restricted.")
             cache = self.client._internal_cache
             if cache:
                 log.info("Refreshing metadata, probably due to a reconnect (%d entries)", len(cache))

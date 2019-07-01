@@ -8,7 +8,7 @@ class ShinkeiException(Exception):
 
 
 class ShinkeiHTTPException(ShinkeiException):
-    """The HTTP exception for this library.
+    """Generic HTTP exception.
 
     Attributes
     ----------
@@ -27,7 +27,7 @@ class ShinkeiHTTPException(ShinkeiException):
 
 
 class ShinkeiWSException(ShinkeiException):
-    """The WebSocket exception for this library.
+    """Generic WebSoecket exception.
 
     Attributes
     ----------
@@ -40,7 +40,16 @@ class ShinkeiWSException(ShinkeiException):
 
 
 class ShinkeiResumeWS(ShinkeiException):
-    """An internal exception raised when the WebSocket has been disconnected but can resume."""
+    """An internal exception raised when the WebSocket has been disconnected but can resume.
+
+    Attributes
+    ----------
+    message: :class:`str`
+        A error message."""
+    def __init__(self, message):
+        self.message = message
+
+        super().__init__(message)
 
 
 class ShinkeiWSClosed(ShinkeiException):

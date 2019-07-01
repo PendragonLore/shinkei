@@ -145,7 +145,7 @@ class Client:
         return self
 
     @property
-    def is_closed(self) -> bool:
+    def is_closed(self):
         """:class:`bool`: Whether or not the client is closed."""
         return self._closed_event.is_set()
 
@@ -299,13 +299,13 @@ class Client:
     async def _do_poll(self):
         try:
             await self._ws.poll_event()
-        except ShinkeiResumeWS:
+        except ShinkeiResumeWS as exc:
             if not self.reconnect:
-                log.info("GOODBYE received, disconnected")
+                log.info("%s, disconnecting.", exc.message)
                 self._task.cancel()
                 await self.close()
                 return
-            log.info("GOODBYE received, trying to reconnect.")
+            log.info("%s, trying to reconnect.", exc.message)
             coro = WSClient.create(self, self.ws_url.human_repr(), reconnect=self.reconnect)
 
             self._ws = await asyncio.wait_for(coro, timeout=20.0, loop=self.loop)

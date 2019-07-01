@@ -38,12 +38,12 @@ class APIClient:
         async with self.session.request(method, url, headers=self.headers, **kwargs) as response:
             log.debug("%s %s with %s returned %d status code",
                       method, url.human_repr(), kwargs.get("data"), response.status)
-            if not response.status == 200:
-                raise ShinkeiHTTPException(
-                    response, response.status, "Request failed ({0.status} {0.reason})".format(response)
-                )
 
             data = await response.json()
+            if not response.status == 200:
+                raise ShinkeiHTTPException(
+                    response, response.status, "{0.status} {0.reason} {1}".format(response, data.get("error"))
+                )
 
             return data
 
