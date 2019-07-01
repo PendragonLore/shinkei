@@ -41,9 +41,9 @@ def connect(url, rest_url, application_id, client_id, auth=None, *, tags=None, r
     Arguments
     ---------
     url: :class:`str`
-        The base dns for the WebSocket url.
+        The base url for the WebSocket url.
     rest_url: :class:`str`
-        The base dns for the REST url.
+        The base url for the REST url.
     application_id: :class:`str`
         A unique id which should be shared among all related clients.
     client_id: :class:`str`
