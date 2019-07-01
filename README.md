@@ -17,4 +17,4 @@ The documentation is available at [read the docs](https://shinkei.rtfd.io).
 
 ---
 
-Special thanks to [amy (queer)](https://github.com/queer/) for helping me understand singyeong.
+Special thanks to [amy (queer)](https://github.com/queer/) for helping me fully understand singyeong.
