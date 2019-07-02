@@ -12,6 +12,7 @@ from .client import Client, connect
 from .exceptions import *
 from .objects import MetadataPayload, Version
 from .querybuilder import Node, QueryBuilder
+from .handlers import Handler, listens_to
 
 try:
     from logging import NullHandler

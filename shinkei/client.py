@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
-import inspect
 import logging
 import traceback
 
@@ -11,12 +10,13 @@ from yarl import URL
 from .api import APIClient
 from .backoff import ExponentialBackoff
 from .gateway import ShinkeiResumeWS, ShinkeiWSClosed, WSClient
+from .handlers import Handler
 
 log = logging.getLogger(__name__)
 
 
 def connect(url, rest_url, application_id, client_id, auth=None, *,
-            tags=None, reconnect=True, session=None, loop=None, klass=None):
+            tags=None, reconnect=True, session=None, loop=None, klass=None, handlers=None, **kwargs):
     """Connect to singyeong.
 
     Since this returns a context manager mixin of :class:`Client`, both
@@ -68,12 +68,15 @@ def connect(url, rest_url, application_id, client_id, auth=None, *,
     klass: Optional[:class:`type`]
         The classed used to instantiate the client.
         Defaults to :class:`Client`
+    kwargs
+        All other kwargs will be passed onto the Client class' ``_connect`` method.
+        Useful when passing a custom class.
     Returns
     -------
     A context manager mixin of :class:`Client`
         The client."""
     return _ClientMixin(url, rest_url, application_id, client_id, auth, reconnect=reconnect,
-                        session=session, loop=loop, tags=tags, klass=klass)
+                        session=session, loop=loop, tags=tags, klass=klass, handlers=handlers, **kwargs)
 
 
 class Client:
@@ -94,7 +97,6 @@ class Client:
         the right password.
     version: :class:`Version`
         A :class:`Version` object representing the singyeong and api version."""
-    listeners = []
 
     def __init__(self):
         # so pycharm doesn't complain lol
@@ -114,14 +116,22 @@ class Client:
         self._ws = None
         self._rest = None
 
+        self.handlers = {}
+        self._waiters = {}
+
         self._internal_cache = []
         self._closed_event = asyncio.Event()
         self.schema_map = {"singyeong": "ws", "ssingyeong": "wss"}
 
     @classmethod
     async def _connect(cls, url, rest_url, application_id, client_id, auth=None, *, reconnect=True,
-                       session=None, loop=None, tags=None):
+                       session=None, loop=None, tags=None, handlers=None, **_):
         self = cls()
+        handlers = handlers or []
+
+        if handlers is not None:
+            for handler in handlers:
+                self.add_handler(handler)
 
         self.loop = loop or asyncio.get_event_loop()
 
@@ -268,28 +278,24 @@ class Client:
 
         return ret.get("result")
 
-    @classmethod
-    def listen(cls):
-        """A decorator which adds a coroutine function to the client which will be called
-        when it receives data as :class:`MetadataPayload`.
+    def add_handler(self, handler):
+        if not issubclass(handler.__class__, Handler):
+            raise TypeError("handler must be a subclass of Handler, got {0}".format(handler.__class__.__name__))
+        self.handlers[handler.__shinkei_handler_name__] = handler
 
-        Note
-        ----
-        The list of coroutines is bound to the *class*, not to the *instance*.
+    def remove_handler(self, handler_name):
+        return self.handlers.pop(handler_name, None)
 
-        Raises
-        ------
-        TypeError
-            The function was not a coroutine."""
+    async def wait_for(self, event, *, timeout=None, check=None):
+        future = self.loop.create_future()
 
-        def wrapper(func):
-            if not inspect.iscoroutinefunction(func):
-                raise TypeError("Callback must be a coroutine.")
-            cls.listeners.append(func)
+        if check is None:
+            def check(*_, **__):
+                return True
 
-            return func
+        self._waiters.setdefault(event.lower(), []).append((future, check))
 
-        return wrapper
+        return await asyncio.wait_for(future, timeout=timeout)
 
     async def close(self):
         """Close the connection to singyeong."""
@@ -303,6 +309,7 @@ class Client:
         try:
             await self._ws.poll_event()
         except ShinkeiResumeWS as exc:
+            self._ws._dispatch("disconnect")
             if not self.reconnect:
                 log.info("%s, disconnecting.", exc.message)
                 self._task.cancel()
@@ -328,6 +335,7 @@ class Client:
                     websockets.WebSocketProtocolError,
                     ShinkeiWSClosed,
                     websockets.InvalidMessage) as exc:
+                self._ws._dispatch("disconnect")
                 if not self.reconnect:
                     await self.close()
                     if isinstance(exc, ShinkeiWSClosed) and exc.code == 1000:

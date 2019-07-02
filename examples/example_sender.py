@@ -10,6 +10,7 @@ async def main():
         # set some basic metadata
         await conn.update_metadata({"sender_id": {"type": "integer", "value": 1}})
         # target the first non restricted client found which has a receiver_id equal to 1
+        # this will raise if no target is found.
         target = shinkei.QueryBuilder(application="my-cool-app", key="uniquekey").eq("receiver_id", 1)
 
         for number in range(10):

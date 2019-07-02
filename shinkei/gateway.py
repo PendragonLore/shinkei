@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import asyncio
+import traceback
 import json
 import logging
 
@@ -46,6 +48,8 @@ class WSClient(websockets.WebSocketClientProtocol):
         ws.tags = client.tags
         ws.reconnect = reconnect
 
+        ws._dispatch("connect")
+
         # HELLO payload
         await ws.poll_event()
 
@@ -68,6 +72,7 @@ class WSClient(websockets.WebSocketClientProtocol):
                 raise ShinkeiWSClosed(f"Disconnected with code {exc.code}.", exc.code)
 
     async def parse_payload(self, data):
+        self._dispatch("raw_socket", data)
         op = data["op"]
 
         if op == self.OP_HEARTBEAT_ACK:
@@ -84,6 +89,7 @@ class WSClient(websockets.WebSocketClientProtocol):
             raise ShinkeiResumeWS(f"Received GOODBYE (reason: {d.get('reason')})")
 
         if op == self.OP_READY:
+            self._dispatch("ready")
             self.client.restricted = restricted = d["restricted"]
             if restricted:
                 log.warning("Client is restricted.")
@@ -96,19 +102,50 @@ class WSClient(websockets.WebSocketClientProtocol):
 
         if op == self.OP_INVALID:
             msg = d["error"]
+            self._dispatch("error", msg)
 
             raise ShinkeiWSException(msg)
 
         if op == self.OP_DISPATCH:
-            self._dispatch(MetadataPayload(d))
+            self._dispatch("data", MetadataPayload(d))
 
             return
 
         log.warning("Unhandled OP %d with payload %s", op, data)
 
-    def _dispatch(self, data):
-        for coro in self.client.listeners:
-            self.loop.create_task(coro(data))
+    def _dispatch(self, name, *args):
+        waiters = self.client._waiters.get(name)
+        if waiters:
+            removed = []
+            for index, (future, check) in enumerate(waiters):
+                if future.cancelled():
+                    removed.append(index)
+                    continue
+
+                try:
+                    result = check(*args)
+                except Exception as exc:
+                    future.set_exception(exc)
+                    removed.append(index)
+                else:
+                    if result:
+                        if not args:
+                            future.set_result(None)
+                        if len(args) == 1:
+                            future.set_result(args[0])
+                        else:
+                            future.set_result(args)
+                        removed.append(index)
+
+            if len(removed) == len(waiters):
+                self.client._waiters.pop(name)
+            else:
+                for i in reversed(removed):
+                    del waiters[i]
+
+        for handler in self.client.handlers.values():
+            for event_name, coro_name in filter(lambda x: x[0] == name, handler.__shinkei_handlers__):
+                self.loop.create_task(getattr(handler, coro_name)(*args))
 
     async def identify(self):
         payload = {
