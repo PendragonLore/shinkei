@@ -278,14 +278,59 @@ class Client:
         return ret.get("result")
 
     def add_handler(self, handler):
-        if not issubclass(handler.__class__, Handler):
-            raise TypeError("handler must be a subclass of Handler, got {0}".format(handler.__class__.__name__))
-        self.handlers[handler.__shinkei_handler_name__] = handler
+        """A function used to manually add handler to the client.
+
+        Arguments
+        ---------
+        handler: :class:`Handler`
+            The handler to add.
+
+        Raises
+        ------
+        TypeError
+            ``handler`` was not an instance of :class:`Handler`
+        ValueError
+            The handler was already registered.
+            This is determined by the name of the handler."""
+        if not isinstance(handler, Handler):
+            raise TypeError("handler must be an instance of Handler, got {0}".format(handler.__class__.__name__))
+        name = handler.qualified_name
+        if name in self.handlers:
+            raise ValueError(f"Handler {name} is already registered.")
+        self.handlers[name] = handler
 
     def remove_handler(self, handler_name):
+        """Remove a handler by name.
+
+        Arguments
+        ---------
+        handler_name: :class:`str`
+            The name of the handler.
+
+        Returns
+        -------
+        Optional[:class:`Handler`]
+            The handler, or ``None`` if it wasn't removed."""
         return self.handlers.pop(handler_name, None)
 
     async def wait_for(self, event, *, timeout=None, check=None):
+        """Wait for an event.
+
+        Arguments
+        ---------
+        event: :class:`str`
+            The name of the event.
+        timeout: Optional[Union[:class:`int`, :class:`float`]]
+            The amount of time to wait before timing out.
+            By default it never times out.
+        check: Callable[..., :class:`bool`]
+            A callable which returns a falsy or truthy value to filter
+            the event to wait for.
+
+        Returns
+        -------
+        Any
+            The return value of the event."""
         future = self.loop.create_future()
 
         if check is None:
@@ -297,6 +342,25 @@ class Client:
         return await asyncio.wait_for(future, timeout=timeout)
 
     async def stream(self, event, *, timeout=None, check=None, limit=None):
+        """An async iterator which waits until an event is dispatched before
+        continuing the iterations.
+
+        Arguments
+        ---------
+        event: :class:`str`
+            Same as :meth:`Client.wait_for`.
+        timeout: Optional[Union[:class:`int`, :class:`float`]]
+            Same as :meth:`Client.wait_for`.
+        check: Callable[..., :class:`bool`]
+            Same as :meth:`Client.wait_for`.
+        limit: Optional[:class:`int`]
+            The maximum amount of iteration before the iterator stops.
+            By default it never stops.
+
+        Yields
+        ------
+        Any
+            The return value of the event."""
         count = 1
 
         while True if limit is None else count <= limit:
@@ -306,7 +370,9 @@ class Client:
             yield await self.wait_for(event, timeout=timeout, check=check)
 
     async def close(self):
-        """Close the connection to singyeong."""
+        """Close the connection to singyeong.
+
+        Run this when cleaning up."""
         self._closed_event.set()
         if not self._rest.session.closed:
             await self._rest.session.close()

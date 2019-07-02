@@ -11,7 +11,7 @@ import logging
 from . import ext
 from .client import Client, connect
 from .exceptions import *
-from .handlers import Handler, listens_to
+from .handlers import Handler, HandlerMeta, listens_to
 from .objects import MetadataPayload, Version
 from .querybuilder import Node, QueryBuilder
 

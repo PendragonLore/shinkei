@@ -4,13 +4,16 @@
 # list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
 
+# The docs templates, css and js all comes from discord.py (https://github.com/Rapptz/discord.py)
+# Thanks to Rapptz (Danny) for this amazing theme and scripts.
+
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
+import os
 # import sys
 # sys.path.insert(0, os.path.abspath("."))
 
@@ -73,17 +76,22 @@ pygments_style = "friendly"
 # a list of builtin themes.
 #
 html_experimental_html5_writer = True
-html_theme = "alabaster"
+html_theme = "basic"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
-# -- Options for HTMLHelp output ---------------------------------------------
+# better scorer
+html_search_scorer = "_static/scorer.js"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "shinkeidoc"
+
+html_context = {
+    'ON_READTHEDOCS': bool(os.environ.get('READTHEDOCS'))
+}
 
 # -- Extension configuration -------------------------------------------------
 
@@ -97,5 +105,5 @@ intersphinx_mapping = {
 autodoc_member_order = "bysource"
 
 
-# def setup(app):
-#    app.add_stylesheet("style.css")
+def setup(app):
+    app.add_javascript("custom.js")

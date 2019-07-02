@@ -4,7 +4,7 @@ import uuid
 import shinkei
 
 
-class SimpleEventHandler(shinkei.Handler, name="cool listener"):
+class SimpleEventHandler(shinkei.Handler):
     @shinkei.listens_to("data")
     async def data_receiver(self, data):
         print(f"{self.qualified_name} received {data.payload}")
