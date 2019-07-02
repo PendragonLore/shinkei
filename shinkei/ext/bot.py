@@ -23,17 +23,13 @@ class BotWSClient(WSClient):
 class BotClient(Client):
     @classmethod
     async def _connect(cls, url, rest_url, application_id, client_id, auth=None, *, reconnect=True,
-                       session=None, loop=None, tags=None, handlers=None, **kwargs):
+                       session=None, loop=None, tags=None, **kwargs):
         self = cls()
 
         try:
             self.bot = kwargs.pop("bot")
         except KeyError:
             raise TypeError("bot must always be provided when using BotClient")
-
-        if handlers is not None:
-            for handler in handlers:
-                self.add_handler(handler)
 
         self.loop = self.bot.loop
 
@@ -60,12 +56,17 @@ class BotClient(Client):
         return self
 
     def add_handler(self, handler):
+        """This method now raises a :exc:`NotImplementedError`
+        due to dispatching being handled by :meth:`discord.Client.dispatch`."""
         raise NotImplementedError("add_handler() cannot be used with BotClient "
                                   "(events are dispatched through bot.dispatch('shinkei_{event_name}'))")
 
     def remove_handler(self, handler_name):
+        """This method now raises a :exc:`NotImplementedError`
+        due to dispatching being handled by :meth:`discord.Client.dispatch`."""
         raise NotImplementedError("remove_handler() cannot be used with BotClient "
                                   "(events are dispatched through bot.dispatch('shinkei_{event_name}'))")
 
     async def wait_for(self, event, *, timeout=None, check=None):
+        """This is now just a proxy to :meth:`discord.Client.wait_for`."""
         return await self.bot.wait_for(event, timeout=timeout, check=check)

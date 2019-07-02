@@ -6,13 +6,23 @@
 Welcome to shinkei's documentation
 ==================================
 
+``shinkei`` is a modern and simple to use asynchronous client for `singyeong <https://github.com/queer/singyeong>`_,
+a fully-dynamic, metadata-oriented service mesh.
+
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Contents
 
+   quickstart
    api
 
+Extensions
+==========
 
+.. toctree::
+   :maxdepth: 2
+
+   ext/bot/index
 
 Indices and tables
 ==================

@@ -99,7 +99,8 @@ html_context = {
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    "aiohttp": ("https://aiohttp.readthedocs.io/en/stable/", None)
+    "aiohttp": ("https://aiohttp.readthedocs.io/en/stable/", None),
+    "discord.py": ("https://discordpy.readthedocs.io/en/latest/", None)
 }
 
 autodoc_member_order = "bysource"
