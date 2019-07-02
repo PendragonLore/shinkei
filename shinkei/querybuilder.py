@@ -6,6 +6,22 @@ class QueryBuilder:
 
     Used mostly in :meth:`Client.send` and :meth:`Client.broadcast`
 
+    Example using key-value queries:
+
+    .. code-block:: python3
+
+        # this will target every client part of "my-cool-app" where "special_value" is greater then 5
+        shinkei.QueryBuilder(application=\"my-cool-app\", key=\"uniquekey\").gt(\"special_value\", 5)
+
+    Example using :class:`Node` based query:
+
+    .. code-block:: python3
+
+        # this will target every client part of "my-cool-app" where "special_value" is greater then 5 or is equal to 10
+        shinkei.QueryBuilder(application="my-cool-app", key="uniquekey").either(
+            "special_value", shinkei.Node().eq(10).gt(5)
+        )
+
     Parameters
     ----------
     application: :class:`str`
@@ -63,7 +79,7 @@ class QueryBuilder:
         return self._single_strategy("gt", key, value)
 
     def gte(self, key, value):
-        """Matches if the value of ``key`` is not greater then ``value``"""
+        """Matches if the value of ``key`` is equal to or greater then ``value``"""
         return self._single_strategy("gte", key, value)
 
     def lt(self, key, value):
@@ -71,7 +87,7 @@ class QueryBuilder:
         return self._single_strategy("lt", key, value)
 
     def lte(self, key, value):
-        """Matches if the value of ``key`` is not lower then ``value``"""
+        """Matches if the value of ``key`` is equal to or lower then ``value``"""
         return self._single_strategy("lte", key, value)
 
     def inside(self, key, value):
