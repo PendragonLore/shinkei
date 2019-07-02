@@ -137,7 +137,7 @@ class Client:
         self.auth = auth
         self.id = client_id
         self.app_id = application_id
-        self.tags = tags or []
+        self.tags = tags
 
         ws_url = URL(url).with_query("encoding=json") / "gateway" / "websocket"
         scheme = self.schema_map.get(ws_url.scheme, ws_url.scheme)

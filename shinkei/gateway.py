@@ -161,6 +161,8 @@ class WSClient(websockets.WebSocketClientProtocol):
         }
         if self.auth is not None:
             payload["d"]["auth"] = self.auth
+        if self.tags is not None:
+            payload["d"]["tags"] = self.tags
         log.info("Sending IDENTIFY payload")
         await self.send_json(payload)
 

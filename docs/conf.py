@@ -14,10 +14,12 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+
+import shinkei
+
 # import sys
 # sys.path.insert(0, os.path.abspath("."))
 
-import shinkei
 
 # -- Project information -----------------------------------------------------
 

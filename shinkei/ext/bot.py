@@ -57,13 +57,13 @@ class BotClient(Client):
 
     def add_handler(self, handler):
         """This method now raises a :exc:`NotImplementedError`
-        due to dispatching being handled by :meth:`discord.Client.dispatch`."""
+        due to dispatching being handled by :meth:`discord.Client.dispatch` prefixed by ``shinkei_``."""
         raise NotImplementedError("add_handler() cannot be used with BotClient "
                                   "(events are dispatched through bot.dispatch('shinkei_{event_name}'))")
 
     def remove_handler(self, handler_name):
         """This method now raises a :exc:`NotImplementedError`
-        due to dispatching being handled by :meth:`discord.Client.dispatch`."""
+        due to dispatching being handled by :meth:`discord.Client.dispatch` prefixed by ``shinkei_``."""
         raise NotImplementedError("remove_handler() cannot be used with BotClient "
                                   "(events are dispatched through bot.dispatch('shinkei_{event_name}'))")
 
