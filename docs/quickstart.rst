@@ -6,11 +6,11 @@ This section is a quickstart to the library, explaining how to install it and sh
 Installing
 ----------
 
-shinkei is not available on PyPi yet but it can still be installed through git:
+shinkei is available on PyPi so in can be installed through pip:
 
 .. code-block:: bash
 
-    pip install git+https://github.com/PendragonLore/shinkei
+    pip install shinkei -U
 
 This library is compatible only with Python 3.6+ and has two dependencies, `websockets <https://github.com/aaugustin/websockets>`_
 and `aiohttp <https://github.com/aio-libs/aiohttp>`_.

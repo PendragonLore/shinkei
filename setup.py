@@ -73,7 +73,7 @@ setup(
         "Development Status :: 3 - Alpha",
         "Natural Language :: English",
         "Intended Audience :: Developers",
-        "Operating System :: OS Independent"
+        "Operating System :: OS Independent",
         "Topic :: Internet",
         "Topic :: Utilities",
         "Topic :: System :: Networking",

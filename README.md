@@ -4,10 +4,10 @@ A client library for [singyeong](https://github.com/queer/singyeong), a fully-dy
 
 ## Installation
 
-The library is not available on PyPi but it can be installed through git.
+The library is available on PyPi so it can be installed through pip:
 
 ```bash
-pip install git+https://github.com/PendragonLore/shinkei
+pip install shinkei -U
 ```
 
 ## Documentation
