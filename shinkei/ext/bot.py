@@ -16,7 +16,7 @@ class BotWSClient(WSClient):
 
         return ws
 
-    async def _dispatch(self, name, *args):
+    def _dispatch(self, name, *args):
         self.bot.dispatch(f"shinkei_{name}")
 
 

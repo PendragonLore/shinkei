@@ -8,6 +8,7 @@ __version__ = "0.0.1a"
 
 import logging
 
+from . import ext
 from .client import Client, connect
 from .exceptions import *
 from .handlers import Handler, listens_to
