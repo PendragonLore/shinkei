@@ -38,7 +38,7 @@ This quickstart showcases an example of how to use shinkei in a discord bot made
             """Send data to another shard in a different process.
 
             For example, you could notify other shards of DMs if this process is running on shard 0."""
-            target = shinkei.QueryBuilder(application="my-cool-bot", key="uniquekey").eq("shard", shard_id)
+            target = shinkei.QueryBuilder(application="my-cool-bot", key="uniquekey").eq("shard_id", shard_id)
 
             await self.ipc.send(data, target=target)
 
