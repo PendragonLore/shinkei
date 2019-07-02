@@ -156,7 +156,6 @@ class WSClient(websockets.WebSocketClientProtocol):
                 "client_id": self.client_id,
                 "application_id": self.app_id,
                 "reconnect": self.reconnect,
-                "tags": self.tags,
             }
         }
         if self.auth is not None:
