@@ -52,9 +52,10 @@ def connect(url, rest_url, application_id, client_id, auth=None, *,
     auth: Optional[:class:`str`]
         A password used to access the server.
         If an incorrect password is sent the client will be in restricted mode.
-        Defaults to ``None``
+        Defaults to ``None``.
     tags: Optional[:class:`list`]
         A list of tags to identify the client and to allow the discovery of it's application id.
+        If the client is restricted the tags will be ignored.
     reconnect: Optional[:class:`bool`]
         Whether or not to reconnect when singyeong sends a GOODBYE payload or when the
         WebSocket disconnects for other reasons.
@@ -169,6 +170,8 @@ class Client:
     async def send(self, data, *, target, nonce=None):
         """Send data to a client which matches the predicates of the ``target`` query.
 
+        Restricted clients cannot use this method.
+
         Arguments
         ---------
         data: Union[:class:`str`, :class:`int`, :class:`float`, :class:`list`, :class:`dict`]
@@ -177,11 +180,17 @@ class Client:
         target: :class:`QueryBuilder`
             The query that is used to match the client.
         nonce
-            A value used to identify the data sent."""
+            A value used to identify the data sent.
+                Raises
+        ------
+        ShinkeiWSException
+            The client is restricted."""
         return await self._ws.send_metadata(data, target=target, nonce=nonce)
 
     async def broadcast(self, data, *, target, nonce=None):
         """Send data to all clients which matches the predicates of the ``target`` query.
+
+        Restricted clients cannot use this method.
 
         Arguments
         ---------
@@ -191,7 +200,12 @@ class Client:
         target: :class:`QueryBuilder`
             The query that is used to match the clients.
         nonce
-            A value used to identify the data sent."""
+            A value used to identify the data sent.
+
+        Raises
+        ------
+        ShinkeiWSException
+            The client is restricted."""
         return await self._ws.broadcast_metadata(data, target=target, nonce=nonce)
 
     async def update_metadata(self, data, *, cache=True):
@@ -233,18 +247,21 @@ class Client:
             The metadata structure was invalid or a restricted key was used."""
         return await self._ws.update_metadata(data, cache=cache)
 
-    async def proxy_request(self, method, route, application, *, target):
+    async def proxy_request(self, method, route, *, target, body=None, headers=None):
         """Make a proxy HTTP request to a client.
 
         Arguments
         ---------
         method: :class:`str`
             The HTTP method to use.
-            Currently only supports GET (I think).
+            Supports only POST, PATCH, PUT, DELETE, MOVE, GET and HEAD.
         route: :class:`str`
             The route to make the request to.
-        application: :class:`str`
-            The application identifier.
+        body: Optional
+            The request body, silently ignored in GET and HEAD.
+            If none is provided but the method requires one an empty string will be sent.
+        headers: Optional[Mapping[:class:`str`, :class:`str`]]
+            The request headers.
         target: :class:`QueryBuilder`
             The query that is used to match the client.
 
@@ -254,9 +271,11 @@ class Client:
 
         Raises
         ------
+        ValueError
+            An unsupported request method was passed.
         ShinkeiHTTPException
             The HTTP proxy request failed."""
-        return await self._rest.proxy(method, route, application, target)
+        return await self._rest.proxy(method, route, target=target, headers=headers, body=body)
 
     async def discover(self, tags):
         """Discover an application id by it's clients tags.

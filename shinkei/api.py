@@ -13,6 +13,9 @@ log = logging.getLogger(__name__)
 
 
 class APIClient:
+    BODY_METHODS = {"POST", "PATCH", "PUT", "DELETE", "MOVE"}
+    METHODS = BODY_METHODS | {"GET", "HEAD"}
+
     def __init__(self):
         self.headers = {}
         self.session = None
@@ -58,14 +61,26 @@ class APIClient:
 
         return await self.request("GET", url)
 
-    async def proxy(self, method, route, application, target):
+    async def proxy(self, method, route, *, target, body=None, headers=None):
+        actual = method.upper()
+
+        if actual not in self.METHODS:
+            raise ValueError(f"{actual} is not a supported HTTP method. (Valid methods are {self.METHODS})")
+
         payload = {
             "method": method,
             "route": route,
-            "query": {
-                "application": application,
-                "ops": target.to_json()
-            }
+            "query": target.to_json()
         }
+
+        can_have_body = actual in self.BODY_METHODS
+        if body is None and can_have_body:
+            payload["body"] = ""
+        elif body is not None and can_have_body:
+            payload["body"] = body
+
+        if headers is None:
+            # not too sure if no headers will cause an exception so just to be safe
+            payload["headers"] = {}
 
         return await self.request("POST", self.url / "proxy", data=payload)
