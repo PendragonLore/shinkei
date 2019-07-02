@@ -127,7 +127,6 @@ class Client:
     async def _connect(cls, url, rest_url, application_id, client_id, auth=None, *, reconnect=True,
                        session=None, loop=None, tags=None, handlers=None, **_):
         self = cls()
-        handlers = handlers or []
 
         if handlers is not None:
             for handler in handlers:
