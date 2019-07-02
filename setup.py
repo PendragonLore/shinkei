@@ -55,7 +55,7 @@ setup(
         "Issue tracker": "https://github.com/PendragonLore/shinkei/issues"
     },
     version=version,
-    packages=["shinkei"],
+    packages=["shinkei", "shinkei.ext"],
     platforms=["any"],
     python_requires=">=3.6.0",
     include_package_data=True,
