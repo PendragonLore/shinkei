@@ -11,7 +11,7 @@ class QueryBuilder:
     .. code-block:: python3
 
         # this will target every client part of "my-cool-app" where "special_value" is greater then 5
-        shinkei.QueryBuilder(application=\"my-cool-app\", key=\"uniquekey\").gt(\"special_value\", 5)
+        shinkei.QueryBuilder(application="my-cool-app", key="uniquekey").gt("special_value", 5)
 
     Example using :class:`Node` based query:
 
