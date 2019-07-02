@@ -6,7 +6,7 @@ This section is a quickstart to the library, explaining how to install it and sh
 Installing
 ----------
 
-shinkei is available on PyPi so in can be installed through pip:
+shinkei is available on PyPi so it can be installed through pip:
 
 .. code-block:: bash
 
