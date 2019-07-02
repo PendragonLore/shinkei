@@ -1,18 +1,36 @@
 import asyncio
 
+import websockets
 from yarl import URL
 
 from ..api import APIClient
 from ..client import Client
 from ..gateway import WSClient
+from ..keepalive import KeepAlivePls
 
 
 class BotWSClient(WSClient):
     @classmethod
     async def create(cls, client, url, *, reconnect):
-        ws = await super().create(client, url, reconnect=reconnect)
+        ws = await websockets.connect(url, create_protocol=cls, loop=client.loop)
 
+        ws.client = client
+        ws.auth = client.auth
+        ws.client_id = client.id
+        ws.app_id = client.app_id
+        ws.tags = client.tags
+        ws.reconnect = reconnect
         ws.bot = client.bot
+
+        ws._dispatch("connect")
+
+        # HELLO payload
+        await ws.poll_event()
+
+        await ws.identify()
+
+        ws.keep_alive = KeepAlivePls(ws=ws)
+        ws.keep_alive.start()
 
         return ws
 
