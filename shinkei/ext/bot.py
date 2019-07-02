@@ -35,7 +35,7 @@ class BotWSClient(WSClient):
         return ws
 
     def _dispatch(self, name, *args):
-        self.bot.dispatch(f"shinkei_{name}")
+        self.bot.dispatch(f"shinkei_{name}", *args)
 
 
 class BotClient(Client):
