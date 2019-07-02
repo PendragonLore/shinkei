@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
-import traceback
 import json
 import logging
+import traceback
 
 import websockets
 
