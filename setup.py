@@ -52,7 +52,8 @@ setup(
     long_description_content_type="text/markdown",
     project_urls={
         "Code": "https://github.com/PendragonLore/shinkei",
-        "Issue tracker": "https://github.com/PendragonLore/shinkei/issues"
+        "Issue tracker": "https://github.com/PendragonLore/shinkei/issues",
+        "Documentation": "https://shinkei.rtfd.io"
     },
     version=version,
     packages=["shinkei", "shinkei.ext"],
