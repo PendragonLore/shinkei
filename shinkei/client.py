@@ -216,15 +216,17 @@ class Client:
             }
 
         ``data`` keys cannot be one of ``ip``, ``restricted``, ``encoding`` or ``last_heartbeat_time``.
+        Valid ``type`` keys are ``string``, ``integer``, ``float``, ``list`` and
+        ``version`` see `here <https://hexdocs.pm/elixir/Version.html>`_ for specifications.
 
         Arguments
         ---------
         data: :class:`dict`
             The metadata to update.
             Must be JSON serializable.
-        cache: :class:`bool`
+        cache: Optional[:class:`bool`]
             Whether or not to cache the metadata and send it back on reconnects.
-
+            Defaults to ``True``.
         Raises
         ------
         ShinkeiWSException
