@@ -296,6 +296,15 @@ class Client:
 
         return await asyncio.wait_for(future, timeout=timeout)
 
+    async def stream(self, event, *, timeout=None, check=None, limit=None):
+        count = 1
+
+        while True if limit is None else count <= limit:
+            if limit is not None:
+                count += 1
+
+            yield await self.wait_for(event, timeout=timeout, check=check)
+
     async def close(self):
         """Close the connection to singyeong."""
         self._closed_event.set()

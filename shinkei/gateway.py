@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import asyncio
 import json
 import logging
-import traceback
 
 import websockets
 
@@ -26,7 +24,7 @@ class WSClient(websockets.WebSocketClientProtocol):
 
     def __init__(self, *args, **kwargs):
         # still here bc pycharm
-        self.client  = None
+        self.client = None
         self.auth = None
         self.client_id = None
         self.app_id = None
@@ -41,12 +39,7 @@ class WSClient(websockets.WebSocketClientProtocol):
     async def create(cls, client, url, *, reconnect):
         ws = await websockets.connect(url, create_protocol=cls, loop=client.loop)
 
-        ws.client = client
-        ws.auth = client.auth
-        ws.client_id = client.id
-        ws.app_id = client.app_id
-        ws.tags = client.tags
-        ws.reconnect = reconnect
+        ws.set_attrs(ws, client, reconnect=reconnect)
 
         ws._dispatch("connect")
 
@@ -59,6 +52,15 @@ class WSClient(websockets.WebSocketClientProtocol):
         ws.keep_alive.start()
 
         return ws
+
+    @staticmethod
+    def set_attrs(ws, client, *, reconnect):
+        ws.client = client
+        ws.auth = client.auth
+        ws.client_id = client.id
+        ws.app_id = client.app_id
+        ws.tags = client.tags
+        ws.reconnect = reconnect
 
     async def poll_event(self):
         try:

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import inspect
 
 
@@ -53,4 +55,6 @@ def listens_to(name):
 
 
 class Handler(metaclass=HandlerMeta):
-    pass
+    @property
+    def qualified_name(self):
+        return self.__shinkei_handler_name__

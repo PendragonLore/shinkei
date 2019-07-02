@@ -1,38 +1,20 @@
+# -*- coding: utf-8 -*-
+
 import asyncio
 
-import websockets
 from yarl import URL
 
 from ..api import APIClient
 from ..client import Client
 from ..gateway import WSClient
-from ..keepalive import KeepAlivePls
 
 
 class BotWSClient(WSClient):
-    @classmethod
-    async def create(cls, client, url, *, reconnect):
-        ws = await websockets.connect(url, create_protocol=cls, loop=client.loop)
+    @staticmethod
+    def set_attrs(ws, client, *, reconnect):
+        super().set_attrs(ws, client, reconnect=reconnect)
 
-        ws.client = client
-        ws.auth = client.auth
-        ws.client_id = client.id
-        ws.app_id = client.app_id
-        ws.tags = client.tags
-        ws.reconnect = reconnect
         ws.bot = client.bot
-
-        ws._dispatch("connect")
-
-        # HELLO payload
-        await ws.poll_event()
-
-        await ws.identify()
-
-        ws.keep_alive = KeepAlivePls(ws=ws)
-        ws.keep_alive.start()
-
-        return ws
 
     def _dispatch(self, name, *args):
         self.bot.dispatch(f"shinkei_{name}", *args)
@@ -58,7 +40,7 @@ class BotClient(Client):
         self.auth = auth
         self.id = client_id
         self.app_id = application_id
-        self.tags = tags or []
+        self.tags = tags
 
         ws_url = URL(url).with_query("encoding=json") / "gateway" / "websocket"
         scheme = self.schema_map.get(ws_url.scheme, ws_url.scheme)
@@ -86,5 +68,4 @@ class BotClient(Client):
                                   "(events are dispatched through bot.dispatch('shinkei_{event_name}'))")
 
     async def wait_for(self, event, *, timeout=None, check=None):
-        raise NotImplementedError("wait_for() cannot be used with BotClient "
-                                  "(use bot.wait_for('shinkei_{event_name}'))")
+        return await self.bot.wait_for(event, timeout=timeout, check=check)

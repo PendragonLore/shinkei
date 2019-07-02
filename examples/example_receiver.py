@@ -4,10 +4,10 @@ import uuid
 import shinkei
 
 
-class SimpleEventHandler(shinkei.Handler, name="cool listener name"):
+class SimpleEventHandler(shinkei.Handler, name="cool listener"):
     @shinkei.listens_to("data")
     async def data_receiver(self, data):
-        print(f"I received this data {data.payload}")
+        print(f"{self.qualified_name} received {data.payload}")
 
 
 async def main():
@@ -15,6 +15,9 @@ async def main():
                                    application_id="my-cool-app", client_id=uuid.uuid4().hex, tags=["receiver"],
                                    handlers=[SimpleEventHandler()])
     await client.update_metadata({"receiver_id": {"type": "integer", "value": 1}})
+
+    async for data in client.stream("data", limit=5):
+        print(f"Stream received {data.payload}")
 
 
 loop = asyncio.get_event_loop()

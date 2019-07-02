@@ -18,6 +18,7 @@ class ShinkeiHTTPException(ShinkeiException):
         The request status code.
     message: :class:`str`
         A error message."""
+
     def __init__(self, request, code, message):
         self.request = request
         self.code = code
@@ -33,6 +34,7 @@ class ShinkeiWSException(ShinkeiException):
     ----------
     message: :class:`str`
         A error message."""
+
     def __init__(self, message):
         self.message = message
 
@@ -46,6 +48,7 @@ class ShinkeiResumeWS(ShinkeiException):
     ----------
     message: :class:`str`
         A error message."""
+
     def __init__(self, message):
         self.message = message
 
@@ -61,6 +64,7 @@ class ShinkeiWSClosed(ShinkeiException):
         The WebSocket status code.
     message: :class:`str`
         A error message."""
+
     def __init__(self, message, code):
         self.code = code
         self.message = message
