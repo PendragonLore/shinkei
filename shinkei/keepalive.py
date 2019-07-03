@@ -2,10 +2,14 @@
 
 import asyncio
 import concurrent
-import json
 import logging
 import threading
 import time
+
+try:
+    import ujson as json
+except ImportError:
+    import json
 
 log = logging.getLogger(__name__)
 

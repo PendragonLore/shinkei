@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
 import logging
 
 import aiohttp
@@ -8,6 +7,11 @@ from yarl import URL
 
 from .exceptions import ShinkeiHTTPException
 from .objects import Version
+
+try:
+    import ujson as json
+except ImportError:
+    import json
 
 log = logging.getLogger(__name__)
 
@@ -24,7 +28,7 @@ class APIClient:
     async def create(cls, url, *, session, auth, loop):
         self = cls()
 
-        self.session = session or aiohttp.ClientSession(loop=loop)
+        self.session = session or aiohttp.ClientSession(json_serialize=json.dumps, loop=loop)
         self.url = URL(url) / "api"
         self.auth = auth
 
@@ -42,7 +46,7 @@ class APIClient:
             log.debug("%s %s with %s returned %d status code",
                       method, url.human_repr(), kwargs.get("data"), response.status)
 
-            data = await response.json()
+            data = await response.json(loads=json.loads)
             if not response.status == 200:
                 raise ShinkeiHTTPException(
                     response, response.status, "{0.status} {0.reason} {1}".format(response, data.get("error"))
@@ -68,7 +72,7 @@ class APIClient:
             raise ValueError(f"{actual} is not a supported HTTP method. (Valid methods are {self.METHODS})")
 
         payload = {
-            "method": method,
+            "method": actual,
             "route": route,
             "query": target.to_json()
         }

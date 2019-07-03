@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
 import logging
 
 import websockets
@@ -8,6 +7,11 @@ import websockets
 from .exceptions import ShinkeiResumeWS, ShinkeiWSClosed, ShinkeiWSException
 from .keepalive import KeepAlivePls
 from .objects import MetadataPayload
+
+try:
+    import ujson as json
+except ImportError:
+    import json
 
 log = logging.getLogger(__name__)
 

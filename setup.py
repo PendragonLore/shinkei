@@ -40,6 +40,9 @@ extras = {
     "docs": [
         "sphinx",
         "sphinxcontrib_trio"
+    ],
+    "ujson": [
+        "ujson"
     ]
 }
 setup(
