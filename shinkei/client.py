@@ -124,7 +124,7 @@ class Client:
         self.app_id = application_id
         self.tags = tags
 
-        ws_url = URL(url).with_query("encoding=json") / "gateway" / "websocket"
+        ws_url = (URL(url) / "gateway" / "websocket").with_query("encoding=json")
         scheme = self.schema_map.get(ws_url.scheme, ws_url.scheme)
 
         self.ws_url = ws_url.with_scheme(scheme)
