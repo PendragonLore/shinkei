@@ -42,7 +42,7 @@ Receiver:
 
     async def main():
         # async context manager so as soon as the program exists it will close the connection
-        async with shinkei.connect("singyeong://localhost:4567", rest_url="http://localhost:4567",
+        async with shinkei.connect("singyeong://localhost:4567",
                                    application_id="my-cool-app", client_id=uuid.uuid4().hex, tags=["receiver"]) as conn:
             # set some basic metadata for routing purposes
             await conn.update_metadata({"receiver_id": {"type": "integer", "value": 1}})
@@ -67,7 +67,7 @@ Sender:
 
 
     async def main():
-        async with shinkei.connect("singyeong://localhost:4567", rest_url="http://localhost:4567",
+        async with shinkei.connect("singyeong://localhost:4567",
                                    application_id="my-cool-app", client_id=uuid.uuid4().hex, tags=["sender"]) as conn:
             # target the first non restricted client found which has a receiver_id equal to 1
             # this will raise if no target is found.

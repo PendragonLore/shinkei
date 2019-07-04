@@ -59,7 +59,7 @@ def connect(url, application_id, client_id, auth=None, *,
         Whether or not to reconnect when singyeong sends a GOODBYE payload or when the
         WebSocket disconnects for other reasons.
         Defaults to ``True``
-    handlers: Optional[List[:class:`Handlers`]]
+    handlers: Optional[List[:class:`Handler`]]
         The initial handlers to register.
     session: Optional[:class:`aiohttp.ClientSession`]
         The session used for HTTP requests.
