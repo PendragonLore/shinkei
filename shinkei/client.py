@@ -9,13 +9,14 @@ from yarl import URL
 
 from .api import APIClient
 from .backoff import ExponentialBackoff
-from .gateway import ShinkeiResumeWS, ShinkeiWSClosed, WSClient
+from .exceptions import ShinkeiResumeWS, ShinkeiWSClosed
+from .gateway import WSClient
 from .handlers import Handler
 
 log = logging.getLogger(__name__)
 
 
-def connect(url, rest_url, application_id, client_id, auth=None, *,
+def connect(url, application_id, client_id, auth=None, *,
             tags=None, reconnect=True, session=None, loop=None, klass=None, handlers=None, **kwargs):
     """Connect to singyeong.
 
@@ -43,8 +44,6 @@ def connect(url, rest_url, application_id, client_id, auth=None, *,
     ---------
     url: :class:`str`
         The base url for the WebSocket url.
-    rest_url: :class:`str`
-        The base url for the REST url.
     application_id: :class:`str`
         A unique id which should be shared among all related clients.
     client_id: :class:`str`
@@ -78,7 +77,7 @@ def connect(url, rest_url, application_id, client_id, auth=None, *,
     -------
     A context manager mixin of :class:`Client`
         The client."""
-    return _ClientMixin(url, rest_url, application_id, client_id, auth, reconnect=reconnect,
+    return _ClientMixin(url, application_id, client_id, auth, reconnect=reconnect,
                         session=session, loop=loop, tags=tags, klass=klass, handlers=handlers, **kwargs)
 
 
@@ -102,23 +101,6 @@ class Client:
         A :class:`Version` object representing the singyeong and api version."""
 
     def __init__(self):
-        # so pycharm doesn't complain lol
-        self.loop = None
-        self.session = None
-
-        self.restricted = None
-        self.password = None
-        self.id = None
-        self.app_id = None
-        self.tags = None
-        self.ws_url = None
-        self.reconnect = None
-        self.version = None
-
-        self._task = None
-        self._ws = None
-        self._rest = None
-
         self.handlers = {}
         self._waiters = {}
 
@@ -127,7 +109,7 @@ class Client:
         self.schema_map = {"singyeong": "ws", "ssingyeong": "wss"}
 
     @classmethod
-    async def _connect(cls, url, rest_url, application_id, client_id, auth=None, *, reconnect=True,
+    async def _connect(cls, url, application_id, client_id, auth=None, *, reconnect=True,
                        session=None, loop=None, tags=None, handlers=None, **_):
         self = cls()
 
@@ -148,10 +130,12 @@ class Client:
         self.ws_url = ws_url.with_scheme(scheme)
         self.reconnect = reconnect
 
-        coro = WSClient.create(self, self.ws_url.human_repr(), reconnect=self.reconnect)
+        coro = WSClient.create(self, self.ws_url, reconnect=self.reconnect)
         self._ws = await asyncio.wait_for(coro, timeout=20)
 
-        self._rest = await APIClient.create(rest_url, session=session, auth=auth, loop=self.loop)
+        rest_scheme = "https" if self.ws_url.scheme == "wss" else "http"
+        self._rest = await APIClient.create(URL(url).with_scheme(rest_scheme),
+                                            session=session, auth=auth, loop=self.loop)
 
         self.version = self._rest.version
 
@@ -308,6 +292,11 @@ class Client:
         handler: :class:`Handler`
             The handler to add.
 
+        Returns
+        -------
+        :class:`Handler`
+            The handler added.
+
         Raises
         ------
         TypeError
@@ -320,7 +309,9 @@ class Client:
         name = handler.qualified_name
         if name in self.handlers:
             raise ValueError(f"Handler {name} is already registered.")
-        self.handlers[name] = handler
+        self.handlers[name] = ret = handler
+
+        return ret
 
     def remove_handler(self, handler_name):
         """Remove a handler by name.
@@ -346,7 +337,7 @@ class Client:
         timeout: Optional[Union[:class:`int`, :class:`float`]]
             The amount of time to wait before timing out.
             By default it never times out.
-        check: Callable[..., :class:`bool`]
+        check: Optional[Callable[..., :class:`bool`]]
             A callable which returns a falsy or truthy value to filter
             the event to wait for.
 
@@ -374,7 +365,7 @@ class Client:
             Same as :meth:`Client.wait_for`.
         timeout: Optional[Union[:class:`int`, :class:`float`]]
             Same as :meth:`Client.wait_for`.
-        check: Callable[..., :class:`bool`]
+        check: Optional[Callable[..., :class:`bool`]]
             Same as :meth:`Client.wait_for`.
         limit: Optional[:class:`int`]
             The maximum amount of iteration before the iterator stops.
@@ -413,7 +404,7 @@ class Client:
                 await self.close()
                 return
             log.info("%s, trying to reconnect.", exc.message)
-            coro = WSClient.create(self, self.ws_url.human_repr(), reconnect=self.reconnect)
+            coro = WSClient.create(self, self.ws_url, reconnect=self.reconnect)
 
             self._ws = await asyncio.wait_for(coro, timeout=20.0, loop=self.loop)
 

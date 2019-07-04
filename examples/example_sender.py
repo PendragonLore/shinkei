@@ -5,8 +5,8 @@ import shinkei
 
 
 async def main():
-    async with shinkei.connect("singyeong://localhost:4567", rest_url="http://localhost:4567",
-                               application_id="my-cool-app", client_id=uuid.uuid4().hex, tags=["sender"]) as conn:
+    async with shinkei.connect("singyeong://localhost:4567", application_id="my-cool-app",
+                               client_id=uuid.uuid4().hex, tags=["sender"]) as conn:
         # set some basic metadata
         await conn.update_metadata({"sender_id": {"type": "integer", "value": 1}})
         # target the first non restricted client found which has a receiver_id equal to 1

@@ -26,22 +26,9 @@ class WSClient(websockets.WebSocketClientProtocol):
     OP_HEARTBEAT_ACK = 6
     OP_GOODBYE = 7
 
-    def __init__(self, *args, **kwargs):
-        # still here bc pycharm
-        self.client = None
-        self.auth = None
-        self.client_id = None
-        self.app_id = None
-        self.tags = None
-        self.reconnect = None
-        self.keep_alive = None
-        self.hb_interval = None
-
-        super().__init__(*args, **kwargs)
-
     @classmethod
     async def create(cls, client, url, *, reconnect):
-        ws = await websockets.connect(url, create_protocol=cls, loop=client.loop)
+        ws = await websockets.connect(url.human_repr(), create_protocol=cls, loop=client.loop)
 
         ws.set_attrs(ws, client, reconnect=reconnect)
 

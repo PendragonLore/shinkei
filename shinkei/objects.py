@@ -9,7 +9,7 @@ class Version:
     api: :class:`str`
         The API version, in ``vN`` format.
     singyeong: :class:`str`
-        The singyeong version, in ``x.y.z`` version."""
+        The singyeong version, in ``x.y.z`` format."""
     __slots__ = ("api", "singyeong")
 
     def __init__(self, data):

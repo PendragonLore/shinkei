@@ -11,9 +11,8 @@ class SimpleEventHandler(shinkei.Handler):
 
 
 async def main():
-    client = await shinkei.connect("singyeong://localhost:4567", rest_url="http://localhost:4567",
-                                   application_id="my-cool-app", client_id=uuid.uuid4().hex, tags=["receiver"],
-                                   handlers=[SimpleEventHandler()])
+    client = await shinkei.connect("singyeong://localhost:4567", application_id="my-cool-app",
+                                   client_id=uuid.uuid4().hex, tags=["receiver"], handlers=[SimpleEventHandler()])
     await client.update_metadata({"receiver_id": {"type": "integer", "value": 1}})
 
     async for data in client.stream("data", limit=5):

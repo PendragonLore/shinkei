@@ -3,7 +3,6 @@
 import logging
 
 import aiohttp
-from yarl import URL
 
 from .exceptions import ShinkeiHTTPException
 from .objects import Version
@@ -22,14 +21,13 @@ class APIClient:
 
     def __init__(self):
         self.headers = {}
-        self.session = None
 
     @classmethod
     async def create(cls, url, *, session, auth, loop):
         self = cls()
 
         self.session = session or aiohttp.ClientSession(json_serialize=json.dumps, loop=loop)
-        self.url = URL(url) / "api"
+        self.url = url / "api"
         self.auth = auth
 
         if self.auth:
