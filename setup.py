@@ -17,6 +17,7 @@ if not version:
     raise RuntimeError("Version is not set.")
 
 if version.endswith(("a", "b", "rc")):
+    # noinspection PyBroadException
     try:
         import subprocess
 

@@ -4,7 +4,7 @@ __title__ = "shinkei"
 __author__ = "Lorenzo"
 __license__ = "MIT"
 __copyright__ = "Copyright 2019 Lorenzo"
-__version__ = "0.0.8"
+__version__ = "0.0.9"
 
 import logging
 

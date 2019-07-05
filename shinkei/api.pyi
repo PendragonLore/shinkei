@@ -2,6 +2,7 @@ import asyncio
 from typing import Mapping, Optional, Set, Union
 
 import aiohttp
+# noinspection PyPackageRequirements
 from yarl import URL
 
 from .objects import Version

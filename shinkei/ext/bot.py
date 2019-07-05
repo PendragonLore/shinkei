@@ -2,6 +2,7 @@
 
 import asyncio
 
+# noinspection PyPackageRequirements
 from yarl import URL
 
 from ..api import APIClient
@@ -21,6 +22,7 @@ class BotWSClient(WSClient):
 
 
 class BotClient(Client):
+    # noinspection PyMethodOverriding
     @classmethod
     async def _connect(cls, url, rest_url, application_id, client_id, auth=None, *, reconnect=True,
                        session=None, loop=None, tags=None, **kwargs):
@@ -44,7 +46,7 @@ class BotClient(Client):
         self.ws_url = ws_url.with_scheme(scheme)
         self.reconnect = reconnect
 
-        coro = BotWSClient.create(self, self.ws_url.human_repr(), reconnect=self.reconnect)
+        coro = BotWSClient.create(self, self.ws_url, reconnect=self.reconnect)
         self._ws = await asyncio.wait_for(coro, timeout=20)
 
         self._rest = await APIClient.create(rest_url, session=session, auth=auth, loop=self.loop)

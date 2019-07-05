@@ -3,6 +3,7 @@ from types import TracebackType
 from typing import Any, AsyncGenerator, Callable, Coroutine, Iterable, List, Mapping, Optional, Type, Union
 
 import aiohttp
+# noinspection PyPackageRequirements
 from yarl import URL
 
 from .api import APIClient
@@ -18,6 +19,7 @@ def connect(url: str, application_id: str, client_id: str,
             **kwargs) -> _ClientMixin: ...
 
 
+# noinspection PyPropertyDefinition
 class Client:
     _waiters: dict
     _internal_cache: list

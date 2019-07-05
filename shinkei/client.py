@@ -5,6 +5,7 @@ import logging
 import traceback
 
 import websockets
+# noinspection PyPackageRequirements
 from yarl import URL
 
 from .api import APIClient
@@ -81,24 +82,26 @@ def connect(url, application_id, client_id, auth=None, *,
                         session=session, loop=loop, tags=tags, klass=klass, handlers=handlers, **kwargs)
 
 
+# noinspection PyProtectedMember
 class Client:
+    # noinspection PyUnresolvedReferences
     """The main client connecting to singyeong.
 
-    This is not supposed to be instantiated manually
-    but through :func:`connect`
+        This is not supposed to be instantiated manually
+        but through :func:`connect`
 
-    Attributes
-    ----------
-    loop: :class:`asyncio.AbstractEventLoop`
-        The loop used to connect to the websocket make HTTP requests.
-    session: :class:`aiohttp.ClientSession`
-        The aiohttp session used for HTTP requests.
-    restricted: :class:`bool`
-        Whether or not the client is restricted.
-        A client is restricted usually when it fails to provide
-        the right password.
-    version: :class:`Version`
-        A :class:`Version` object representing the singyeong and api version."""
+        Attributes
+        ----------
+        loop: :class:`asyncio.AbstractEventLoop`
+            The loop used to connect to the websocket make HTTP requests.
+        session: :class:`aiohttp.ClientSession`
+            The aiohttp session used for HTTP requests.
+        restricted: :class:`bool`
+            Whether or not the client is restricted.
+            A client is restricted usually when it fails to provide
+            the right password.
+        version: :class:`Version`
+            A :class:`Version` object representing the singyeong and api version."""
 
     def __init__(self):
         self.handlers = {}
@@ -412,6 +415,7 @@ class Client:
         backoff = ExponentialBackoff()
 
         while True:
+            # noinspection PyBroadException
             try:
                 await self._do_poll()
             except asyncio.CancelledError:
@@ -451,6 +455,7 @@ class Client:
                 traceback.print_exc()
 
 
+# noinspection PyProtectedMember
 class _ClientMixin:
     __slots__ = ("_args", "_kwargs", "_client", "_client_class")
 

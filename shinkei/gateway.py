@@ -16,6 +16,7 @@ except ImportError:
 log = logging.getLogger(__name__)
 
 
+# noinspection PyProtectedMember
 class WSClient(websockets.WebSocketClientProtocol):
     OP_HELLO = 0
     OP_IDENTIFY = 1
@@ -75,6 +76,7 @@ class WSClient(websockets.WebSocketClientProtocol):
         d = data["d"]
 
         if op == self.OP_HELLO:
+            # noinspection PyAttributeOutsideInit
             self.hb_interval = d["heartbeat_interval"] / 1000
             return
 
@@ -152,6 +154,7 @@ class WSClient(websockets.WebSocketClientProtocol):
         if self.auth is not None:
             payload["d"]["auth"] = self.auth
         if self.tags is not None:
+            # noinspection PyTypeChecker
             payload["d"]["tags"] = self.tags
         log.info("Sending IDENTIFY payload")
         await self.send_json(payload)

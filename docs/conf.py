@@ -24,6 +24,7 @@ import shinkei
 # -- Project information -----------------------------------------------------
 
 project = "shinkei"
+# noinspection PyShadowingBuiltins
 copyright = "2019, Lorenzo"
 author = "Lorenzo"
 

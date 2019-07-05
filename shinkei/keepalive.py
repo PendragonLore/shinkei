@@ -16,6 +16,7 @@ log = logging.getLogger(__name__)
 
 class KeepAlivePls(threading.Thread):
     def __init__(self, *args, **kwargs):
+        # noinspection PyUnresolvedReferences
         self.ws = kwargs.pop("ws")
         self.interval = self.ws.hb_interval
 
@@ -35,9 +36,11 @@ class KeepAlivePls(threading.Thread):
 
         while not self.stop_event.wait(self.interval):
             future = asyncio.run_coroutine_threadsafe(self.ws.send(data), loop=self.ws.loop)
+            # noinspection PyBroadException
             try:
                 total = 0
                 while True:
+                    # noinspection PyUnresolvedReferences
                     try:
                         log.debug("Sending heartbeat for client with id %s", self.ws.client_id)
                         future.result(timeout=5)

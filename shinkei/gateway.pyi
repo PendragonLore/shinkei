@@ -1,6 +1,7 @@
 from typing import List, Mapping, Optional, Union
 
 import websockets
+# noinspection PyPackageRequirements
 from yarl import URL
 
 from .client import Client

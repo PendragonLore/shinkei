@@ -3,6 +3,7 @@ import threading
 from .gateway import WSClient
 
 class KeepAlivePls(threading.Thread):
+    # noinspection PyMissingConstructor
     def __init__(self, *args, ws: WSClient, **kwargs) -> None: ...
 
     ws: WSClient

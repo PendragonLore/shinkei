@@ -59,6 +59,7 @@ class QueryBuilder:
     def _multiple_stategy(self, op, key, builder):
         if not isinstance(builder, Node):
             raise TypeError("builder must be of type Node, got {0}", type(builder).__name__)
+        # noinspection PyProtectedMember
         if not builder._ops:
             raise TypeError("Node provided doesn't have any OPs.")
 
