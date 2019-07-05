@@ -7,22 +7,22 @@ class HandlerMeta(type):
     # noinspection PyUnresolvedReferences
     """A metaclass used to implement the main functionality of the handlers.
 
-        Not really to be used directly but rather to implement more complex custom handler classes.
+    Not really to be used directly but rather to implement more complex custom handler classes.
 
-        Note
-        ----
-        The name kwarg are meant to be passed in the type constructor, like this:
+    Note
+    ----
+    The name kwarg are meant to be passed in the type constructor, like this:
 
-        .. code-block:: python3
+    .. code-block:: python3
 
-            class MyHandler(shinkei.Handler, name=\"My Handler\"):
-                pass
+        class MyHandler(shinkei.Handler, name=\"My Handler\"):
+            pass
 
-        Arguments
-        ----------
-        name: Optional[:class:`str`]
-            The name of the handler, used to determine if it has already been registered or not.
-            Defaults to the class's name."""
+    Arguments
+    ----------
+    name: Optional[:class:`str`]
+        The name of the handler, used to determine if it has already been registered or not.
+        Defaults to the class's name."""
     def __new__(mcs, *args, **kwargs):
         name, bases, attrs = args
 

@@ -87,21 +87,21 @@ class Client:
     # noinspection PyUnresolvedReferences
     """The main client connecting to singyeong.
 
-        This is not supposed to be instantiated manually
-        but through :func:`connect`
+    This is not supposed to be instantiated manually
+    but through :func:`connect`
 
-        Attributes
-        ----------
-        loop: :class:`asyncio.AbstractEventLoop`
-            The loop used to connect to the websocket make HTTP requests.
-        session: :class:`aiohttp.ClientSession`
-            The aiohttp session used for HTTP requests.
-        restricted: :class:`bool`
-            Whether or not the client is restricted.
-            A client is restricted usually when it fails to provide
-            the right password.
-        version: :class:`Version`
-            A :class:`Version` object representing the singyeong and api version."""
+    Attributes
+    ----------
+    loop: :class:`asyncio.AbstractEventLoop`
+        The loop used to connect to the websocket make HTTP requests.
+    session: :class:`aiohttp.ClientSession`
+        The aiohttp session used for HTTP requests.
+    restricted: :class:`bool`
+        Whether or not the client is restricted.
+        A client is restricted usually when it fails to provide
+        the right password.
+    version: :class:`Version`
+        A :class:`Version` object representing the singyeong and api version."""
 
     def __init__(self):
         self.handlers = {}
