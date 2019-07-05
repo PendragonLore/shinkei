@@ -7,12 +7,6 @@ from yarl import URL
 from .objects import Version
 from .querybuilder import QueryBuilder
 
-try:
-    import ujson as json
-except ImportError:
-    import json
-
-
 
 class APIClient:
     BODY_METHODS: Set[str]
