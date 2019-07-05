@@ -2,7 +2,6 @@ import threading
 
 from .gateway import WSClient
 
-
 class KeepAlivePls(threading.Thread):
     def __init__(self, *args, ws: WSClient, **kwargs) -> None: ...
 

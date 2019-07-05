@@ -1,5 +1,4 @@
-from typing import Tuple, List
-
+from typing import List, Tuple
 
 class HandlerMeta(type):
     __shinkei_handlers__: List[Tuple[str, str]]

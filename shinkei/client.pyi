@@ -1,6 +1,6 @@
 import asyncio
 from types import TracebackType
-from typing import Optional, Type, List, Mapping, Union, Any, Callable, Iterable, Coroutine, AsyncGenerator
+from typing import Any, AsyncGenerator, Callable, Coroutine, Iterable, List, Mapping, Optional, Type, Union
 
 import aiohttp
 from yarl import URL
@@ -10,7 +10,6 @@ from .gateway import WSClient
 from .handlers import Handler
 from .objects import Version
 from .querybuilder import QueryBuilder
-
 
 def connect(url: str, application_id: str, client_id: str,
             auth: Optional[str] = ..., *, tags: Optional[list] = ..., reconnect: Optional[bool] = ...,

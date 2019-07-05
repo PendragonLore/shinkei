@@ -1,5 +1,4 @@
-from typing import Optional, Callable, Union
-
+from typing import Callable, Optional, Union
 
 class ExponentialBackoff:
     _base: int

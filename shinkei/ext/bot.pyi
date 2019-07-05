@@ -1,11 +1,10 @@
-from typing import Optional, List, Any, Type
+import asyncio
+from typing import Any, List, Optional, Type
 
 import aiohttp
-import asyncio
 
 from ..client import Client
 from ..handlers import Handler
-
 
 class BotClient(Client):
     bot: Any

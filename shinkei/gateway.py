@@ -61,8 +61,8 @@ class WSClient(websockets.WebSocketClientProtocol):
         except websockets.exceptions.ConnectionClosed as exc:
             if exc.code not in {1000, 4004, 4010, 4011}:
                 raise ShinkeiResumeWS(f"Disconnected with code {exc.code}, trying to reconnect.")
-            else:
-                raise ShinkeiWSClosed(f"Disconnected with code {exc.code}.", exc.code)
+
+            raise ShinkeiWSClosed(f"Disconnected with code {exc.code}.", exc.code)
 
     async def parse_payload(self, data):
         self._dispatch("raw_socket", data)
@@ -137,7 +137,7 @@ class WSClient(websockets.WebSocketClientProtocol):
                     del waiters[i]
 
         for handler in self.client.handlers.values():
-            for event_name, coro_name in filter(lambda x: x[0] == name, handler.__shinkei_handlers__):
+            for _, coro_name in filter(lambda x: x[0] == name, handler.__shinkei_handlers__):
                 self.loop.create_task(getattr(handler, coro_name)(*args))
 
     async def identify(self):

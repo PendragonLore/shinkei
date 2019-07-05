@@ -1,5 +1,4 @@
-from typing import Iterable, Optional, Union, List
-
+from typing import Iterable, List, Optional, Union
 
 class QueryBuilder:
     __slots__: Iterable[str]

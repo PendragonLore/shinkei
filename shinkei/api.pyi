@@ -1,17 +1,17 @@
 import asyncio
+from typing import Mapping, Optional, Set, Union
 
 import aiohttp
 from yarl import URL
 
-from .querybuilder import QueryBuilder
 from .objects import Version
+from .querybuilder import QueryBuilder
 
 try:
     import ujson as json
 except ImportError:
     import json
 
-from typing import Set, Union, Optional, Mapping
 
 
 class APIClient:

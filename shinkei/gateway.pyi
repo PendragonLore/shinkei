@@ -1,12 +1,11 @@
-import websockets
+from typing import List, Mapping, Optional, Union
 
+import websockets
 from yarl import URL
 
 from .client import Client
-from typing import Optional, List, Mapping, Union
 from .keepalive import KeepAlivePls
 from .querybuilder import QueryBuilder
-
 
 class WSClient(websockets.WebSocketClientProtocol):
     OP_HELLO: int

@@ -1,6 +1,5 @@
 from typing import Iterable, Optional, Union
 
-
 class Version:
     __slots__: Iterable[str]
 
@@ -22,4 +21,3 @@ class MetadataPayload:
     def __init__(self, data: dict) -> None: ...
 
     def __repr__(self) -> str: ...
-

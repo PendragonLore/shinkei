@@ -31,7 +31,7 @@ class BotClient(Client):
         except KeyError:
             raise TypeError("bot must always be provided when using BotClient")
 
-        self.loop = self.bot.loop
+        self.loop = loop or self.bot.loop
 
         self.auth = auth
         self.id = client_id

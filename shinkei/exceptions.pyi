@@ -1,6 +1,5 @@
 import aiohttp
 
-
 class ShinkeiException(Exception): ...
 
 
