@@ -66,7 +66,7 @@ setup(
     include_package_data=True,
     install_requires=requirements,
     extras_require=extras,
-    keywords="ipc, asyncio, singyeong",
+    keywords="ipc, asyncio, singyeong, discord",
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Framework :: AsyncIO",
