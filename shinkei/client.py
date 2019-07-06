@@ -170,7 +170,8 @@ class Client:
             The query that is used to match the client.
         nonce
             A value used to identify the data sent.
-                Raises
+
+        Raises
         ------
         ShinkeiWSException
             The client is restricted."""
