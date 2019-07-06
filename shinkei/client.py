@@ -68,7 +68,7 @@ def connect(url, application_id, client_id, auth=None, *,
     loop: Optional[:class:`asyncio.AbstractEventLoop`]
         The loop used to connect to the websocket and make HTTP requests.
         If non is provided, :func:`asyncio.get_event_loop` will be used to get one.
-    klass: Optional[:class:`type`]
+    klass: Optional[Type[:class:`Client`]]
         The classed used to instantiate the client.
         Defaults to :class:`Client`
     kwargs
