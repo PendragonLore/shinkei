@@ -51,7 +51,7 @@ def connect(url, application_id, client_id, auth=None, *,
         An id unique across all clients connected to the same application.
     auth: Optional[:class:`str`]
         A password used to access the server.
-        If an incorrect password is sent the client will be in restricted mode.
+        If an incorrect password is sent the client will be put in restricted mode.
         Defaults to ``None``.
     tags: Optional[:class:`list`]
         A list of tags to identify the client and to allow the discovery of it's application id.
@@ -202,7 +202,7 @@ class Client:
         """Update metadata on singyeong.
 
         The data is not consistent between server restarts but
-        if ``cache`` is set to ``True`` then it will be persist between restarts.
+        if ``cache`` is set to ``True`` then it will be persist between reconnects.
 
         ``data`` must have a structure similar to the following dictionary:
 
@@ -415,7 +415,7 @@ class Client:
     async def _poll_data(self):
         backoff = ExponentialBackoff()
 
-        while True:
+        while not self.is_closed:
             # noinspection PyBroadException
             try:
                 await self._do_poll()
