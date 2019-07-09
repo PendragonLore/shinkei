@@ -11,7 +11,7 @@ class HandlerMeta(type):
 
     Note
     ----
-    The name kwarg are meant to be passed in the type constructor, like this:
+    The listed args are meant to be passed in the type constructor as kwargs, like this:
 
     .. code-block:: python3
 
