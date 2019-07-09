@@ -202,7 +202,7 @@ class Client:
         """Update metadata on singyeong.
 
         The data is not consistent between server restarts but
-        if ``cache`` is set to ``True`` then it will be persist between reconnects.
+        if ``cache`` is set to ``True`` then it will persist between reconnects.
 
         ``data`` must have a structure similar to the following dictionary:
 
