@@ -221,7 +221,7 @@ class Client:
 
         ``data`` keys cannot be one of ``ip``, ``restricted``, ``encoding`` or ``last_heartbeat_time``.
         Valid ``type`` keys are ``string``, ``integer``, ``float``, ``list`` and
-        ``version`` see `here <https://hexdocs.pm/elixir/Version.html>`_ for specifications.
+        ``version`` see `here <https://hexdocs.pm/elixir/Version.html>`_ for specifications about the ladder.
 
         Arguments
         ---------
