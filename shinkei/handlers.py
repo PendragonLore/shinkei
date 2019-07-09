@@ -97,5 +97,5 @@ class Handler(metaclass=HandlerMeta):
     This class is made only for subclassing."""
     @property
     def qualified_name(self):
-        """:class:`str`: returns the name passed in the type constructor, else the class name."""
+        """:class:`str`: The name passed in the type constructor or the class' name if none was provided."""
         return self.__shinkei_handler_name__ if self.__shinkei_handler_name__ is not None else self.__class__.__name__

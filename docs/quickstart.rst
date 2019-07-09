@@ -42,8 +42,8 @@ Receiver:
 
     async def main():
         # async context manager so as soon as the program exists it will close the connection
-        async with shinkei.connect("singyeong://localhost:4567",
-                                   application_id="my-cool-app", client_id=uuid.uuid4().hex, tags=["receiver"]) as conn:
+        async with shinkei.connect("singyeong://localhost:4567", application_id="my-cool-app",
+                                   client_id=uuid.uuid4().hex, tags=["receiver"]) as conn:
             # set some basic metadata for routing purposes
             await conn.update_metadata({"receiver_id": {"type": "integer", "value": 1}})
 

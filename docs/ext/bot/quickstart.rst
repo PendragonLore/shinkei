@@ -22,8 +22,8 @@ This quickstart showcases an example of how to use shinkei in a discord bot made
             """Connect to singyeong before the bot starts.
 
             If anything raises here it will stop the bot from starting so be careful."""
-            self.ipc = await shinkei.connect("singyeong://localhost:4567", rest_url="http://localhost:4567",
-                                             application_id="my-cool-bot", client_id=uuid.uuid4().hex, tags=["receiver"],
+            self.ipc = await shinkei.connect("singyeong://localhost:4567", application_id="my-cool-bot",
+                                             client_id=uuid.uuid4().hex, tags=["receiver"],
                                              klass=shinkei.ext.BotClient, bot=self)
 
             await self.ipc.update_metadata({"shard_id": {"type": "integer", "value": self.shard_id}})
