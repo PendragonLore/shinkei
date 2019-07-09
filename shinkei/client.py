@@ -247,7 +247,7 @@ class Client:
             Supports only POST, PATCH, PUT, DELETE, MOVE, GET and HEAD.
         route: :class:`str`
             The route to make the request to.
-        body: Optional[Union[:class:`str`, :class:`dict`]]
+        body: Optional[Union[:class:`str`, :class:`dict`, :class:`list`]]
             The request body, silently ignored in GET and HEAD.
             If none is provided but the method requires one an empty string will be sent.
         headers: Optional[Mapping[:class:`str`, :class:`str`]]
@@ -257,7 +257,8 @@ class Client:
 
         Returns
         -------
-        The HTTP response.
+        Union[:class:`str`, :class:`dict`, :class:`list`]
+            The HTTP response.
 
         Raises
         ------
