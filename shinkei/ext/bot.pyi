@@ -7,7 +7,6 @@ from ..client import Client
 from ..gateway import WSClient
 from ..handlers import Handler
 
-
 class BotWSClient(WSClient):
     client: BotClient
 

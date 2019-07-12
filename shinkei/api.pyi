@@ -8,7 +8,6 @@ from yarl import URL
 from .objects import Version
 from .querybuilder import QueryBuilder
 
-
 class APIClient:
     BODY_METHODS: Set[str]
     METHODS: Set[str]
