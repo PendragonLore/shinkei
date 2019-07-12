@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-from .bot import BotClient
+from .bot import BotClient  # noqa: F401

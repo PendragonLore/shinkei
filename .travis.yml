@@ -7,17 +7,24 @@ python:
   - "3.7"
   - "3.8-dev"
 
+env:
+  - SPHINXOPTS="-W"
+
 install:
   - pip install -r requirements.txt -U isort wheel
   - pip install -U .[docs,ujson]
 
 before_script:
   - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
+
 script:
   - "pytest -vs"
   - "isort . --check-only --recursive"
+  - "flake8 ."
   - "cd docs && make html"
   - "cd .."
+  - 'if [[ -z "$TRAVIS_TAG" ]]; then python3.7 setup.py sdist bdist_wheel bdist_egg; fi'
+  # build only if we are not deploying
 
 deploy:
   provider: pypi
