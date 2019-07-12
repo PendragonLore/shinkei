@@ -15,6 +15,7 @@ alpine 3.5:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
     - flake8 .
+    - mypy -p shinkei
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
@@ -35,6 +36,7 @@ alpine 3.6:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
     - flake8 .
+    - mypy -p shinkei
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
@@ -55,6 +57,7 @@ alpine 3.7:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
     - flake8 .
+    - mypy -p shinkei
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
@@ -75,6 +78,7 @@ alpine 3.8:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
     - flake8 .
+    - mypy -p shinkei
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
@@ -94,6 +98,7 @@ stretch 3.5:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
     - flake8 .
+    - mypy -p shinkei
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
@@ -113,6 +118,7 @@ stretch 3.6:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
     - flake8 .
+    - mypy -p shinkei
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
@@ -132,6 +138,7 @@ stretch 3.7:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
     - flake8 .
+    - mypy -p shinkei
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
@@ -151,6 +158,7 @@ stretch 3.8:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
     - flake8 .
+    - mypy -p shinkei
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
