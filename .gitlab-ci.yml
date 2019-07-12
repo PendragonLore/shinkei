@@ -1,0 +1,141 @@
+stages:
+  - build
+  - deploy
+
+alpine 3.6:
+  stage: build
+  image: python:3.6-alpine
+  before_script:
+    - apk add --no-cache --virtual .build-deps gcc musl-dev linux-headers
+    - pip install .[ujson,docs,tests] -U wheel
+  script:
+    - PYTHONPATH="$(pwd)" pytest -vs
+    - isort . --check-only --recursive
+    - python ./setup.py sdist bdist_egg bdist_wheel
+    - cd docs && make html
+  artifacts:
+    paths:
+      - dist
+      - docs/_build
+    expire_in: 2 days
+  retry: 1
+  when: always
+
+alpine 3.7:
+  stage: build
+  image: python:3.7-alpine
+  before_script:
+    - apk add --no-cache --virtual .build-deps gcc musl-dev linux-headers
+    - pip install .[ujson,docs,tests] -U wheel
+  script:
+    - PYTHONPATH="$(pwd)" pytest -vs
+    - isort . --check-only --recursive
+    - python ./setup.py sdist bdist_egg bdist_wheel
+    - cd docs && make html
+  artifacts:
+    paths:
+      - dist
+      - docs/_build
+    expire_in: 2 days
+  retry: 1
+  when: always
+
+alpine 3.8:
+  stage: build
+  image: python:3.8-alpine
+  before_script:
+    - apk add --no-cache --virtual .build-deps gcc musl-dev linux-headers
+    - pip install .[ujson,docs,tests] -U wheel
+  script:
+    - PYTHONPATH="$(pwd)" pytest -vs
+    - isort . --check-only --recursive
+    - python ./setup.py sdist bdist_egg bdist_wheel
+    - cd docs && make html
+  artifacts:
+    paths:
+      - dist
+      - docs/_build
+    expire_in: 2 days
+  retry: 1
+  when: always
+
+stretch 3.6:
+  stage: build
+  image: python:3.6-stretch
+  before_script:
+    - pip install .[ujson,docs,tests] -U wheel
+  script:
+    - PYTHONPATH="$(pwd)" pytest -vs
+    - isort . --check-only --recursive
+    - python ./setup.py sdist bdist_egg bdist_wheel
+    - cd docs && make html
+  artifacts:
+    paths:
+      - dist
+      - docs/_build
+    expire_in: 2 days
+  retry: 1
+  when: always
+
+stretch 3.7:
+  stage: build
+  image: python:3.7-stretch
+  before_script:
+    - pip install .[ujson,docs,tests] -U wheel
+  script:
+    - PYTHONPATH="$(pwd)" pytest -vs
+    - isort . --check-only --recursive
+    - python ./setup.py sdist bdist_egg bdist_wheel
+    - cd docs && make html
+  artifacts:
+    paths:
+      - dist
+      - docs/_build
+    expire_in: 2 days
+  retry: 1
+  when: always
+
+stretch 3.8:
+  stage: build
+  image: python:3.8-stretch
+  before_script:
+    - pip install .[ujson,docs,tests] -U wheel
+  script:
+    - PYTHONPATH="$(pwd)" pytest -vs
+    - isort . --check-only --recursive
+    - python ./setup.py sdist bdist_egg bdist_wheel
+    - cd docs && make html
+  artifacts:
+    paths:
+      - dist
+      - docs/_build
+    expire_in: 2 days
+  retry: 1
+  when: always
+
+pages:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - mv docs/_build/html public
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
+
+deploy:
+  stage: deploy
+  image: python:3.8-alpine
+  before_script:
+    - pip install -U twine
+    - ls dist
+    - export TWINE_USERNAME="$(echo -e $TWINE_USERNAME)"
+    - export TWINE_PASSWORD="$(echo -e $TWINE_PASSWORD)"
+  script:
+    - twine upload dist/*
+  artifacts:
+    paths:
+      - dist
+  only:
+    - tags@PendragonLore/shinkei
