@@ -14,6 +14,7 @@ alpine 3.5:
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
+    - flake8 .
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
@@ -33,6 +34,7 @@ alpine 3.6:
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
+    - flake8 .
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
@@ -52,6 +54,7 @@ alpine 3.7:
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
+    - flake8 .
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
@@ -71,6 +74,7 @@ alpine 3.8:
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
+    - flake8 .
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
@@ -89,6 +93,7 @@ stretch 3.5:
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
+    - flake8 .
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
@@ -107,6 +112,7 @@ stretch 3.6:
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
+    - flake8 .
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
@@ -125,6 +131,7 @@ stretch 3.7:
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
+    - flake8 .
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
@@ -143,6 +150,7 @@ stretch 3.8:
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
+    - flake8 .
     - python ./setup.py sdist bdist_egg bdist_wheel
     - cd docs && make html
   artifacts:
