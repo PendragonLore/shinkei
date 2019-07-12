@@ -8,7 +8,10 @@ The binaries are available on [docker](https://hub.docker.com/r/queer/singyeong)
 
 ### Credits
 
-Special thanks to [amy (queer)](https://github.com/queer/) for creating and helping me understand singyeong.
+Special thanks to [amy (queer)](https://github.com/queer/) for creating and helping me understand singyeong and to
+[Rapptz (Danny)](https://github.com/Rapptz) for the amazing docs addon and overall heavly inspiring this lib's design 
+through [discord.py](https://github.com/Rapptz/discord.py).
+
 
 ## Installation
 
