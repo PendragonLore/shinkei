@@ -150,7 +150,7 @@ pages:
 
 deploy:
   stage: deploy
-  image: python:3.8-alpine
+  image: python:3.8-rc-alpine
   before_script:
     - pip install -U twine
     - ls dist
