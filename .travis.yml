@@ -11,8 +11,8 @@ env:
   - SPHINXOPTS="-W"
 
 install:
-  - pip install -r requirements.txt -U isort wheel
-  - pip install -U .[docs,ujson]
+  - pip install -r requirements.txt -U wheel
+  - pip install -U .[docs,ujson,tests]
 
 before_script:
   - "export PYTHONPATH=$PYTHONPATH:$(pwd)"

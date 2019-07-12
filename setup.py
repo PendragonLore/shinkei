@@ -44,6 +44,11 @@ extras = {
     ],
     "ujson": [
         "ujson"
+    ],
+    "tests": [
+        "pytest",
+        "flake8",
+        "isort"
     ]
 }
 setup(
