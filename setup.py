@@ -67,7 +67,7 @@ setup(
     version=version,
     packages=["shinkei", "shinkei.ext"],
     platforms=["any"],
-    python_requires=">=3.6.0",
+    python_requires=">=3.5.3",
     include_package_data=True,
     install_requires=requirements,
     extras_require=extras,

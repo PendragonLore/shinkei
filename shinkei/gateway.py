@@ -61,9 +61,9 @@ class WSClient(websockets.WebSocketClientProtocol):
             await self.parse_payload(data)
         except websockets.exceptions.ConnectionClosed as exc:
             if exc.code not in {1000, 4004, 4010, 4011}:
-                raise ShinkeiResumeWS(f"Disconnected with code {exc.code}, trying to reconnect.")
+                raise ShinkeiResumeWS("Disconnected with code {0.code}, trying to reconnect.".format(exc))
 
-            raise ShinkeiWSClosed(f"Disconnected with code {exc.code}.", exc.code)
+            raise ShinkeiWSClosed("Disconnected with code {0.code}.".format(exc), exc.code)
 
     async def parse_payload(self, data):
         self._dispatch("raw_socket", data)
@@ -81,7 +81,7 @@ class WSClient(websockets.WebSocketClientProtocol):
             return
 
         if op == self.OP_GOODBYE:
-            raise ShinkeiResumeWS(f"Received GOODBYE (reason: {d.get('reason')})")
+            raise ShinkeiResumeWS("Received GOODBYE (reason: {0})".format(d.get("reason")))
 
         if op == self.OP_READY:
             self._dispatch("ready")
@@ -164,6 +164,7 @@ class WSClient(websockets.WebSocketClientProtocol):
     async def send_metadata(self, data, *, target, nonce=None):
         if self.client.restricted:
             raise ShinkeiWSException("Restricted clients cannot SEND.")
+
         payload = {
             "op": self.OP_DISPATCH,
             "t": "SEND",

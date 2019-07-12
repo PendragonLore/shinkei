@@ -313,7 +313,7 @@ class Client:
             raise TypeError("handler must be an instance of Handler, got {0}".format(handler.__class__.__name__))
         name = handler.qualified_name
         if name in self.handlers:
-            raise ValueError(f"Handler {name} is already registered.")
+            raise ValueError("Handler {0} is already registered.".format(name))
         self.handlers[name] = ret = handler
 
         return ret

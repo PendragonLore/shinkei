@@ -52,7 +52,7 @@ class QueryBuilder:
         self.optional = kwargs.get("optional", False)
 
     def _single_strategy(self, op, key, value):
-        self._ops.append({key: {f"${op}": value}})
+        self._ops.append({key: {"${0}".format(op): value}})
 
         return self
 
@@ -63,7 +63,7 @@ class QueryBuilder:
         if not builder._ops:
             raise TypeError("Node provided doesn't have any OPs.")
 
-        self._ops.append({key: {f"${op}": builder.to_json()}})
+        self._ops.append({key: {"${0}".format(op): builder.to_json()}})
 
         return self
 
@@ -147,7 +147,7 @@ class Node:
         self._ops = []
 
     def _single_strategy(self, op, value):
-        self._ops.append({f"${op}": value})
+        self._ops.append({"${0}".format(op): value})
 
         return self
 

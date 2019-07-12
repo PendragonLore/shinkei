@@ -7,7 +7,7 @@ import shinkei
 class SimpleEventHandler(shinkei.Handler):
     @shinkei.listens_to("data")
     async def data_receiver(self, data):
-        print(f"{self.qualified_name} received {data.payload}")
+        print("{0.qualified_name} received {1.payload}".format(self, data))
 
 
 async def main():
@@ -16,7 +16,7 @@ async def main():
     await client.update_metadata({"receiver_id": {"type": "integer", "value": 1}})
 
     async for data in client.stream("data", limit=5):
-        print(f"Stream received {data.payload}")
+        print("Stream received {0.payload}".format(data))
 
 
 loop = asyncio.get_event_loop()

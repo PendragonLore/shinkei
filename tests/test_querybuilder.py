@@ -21,7 +21,7 @@ def test_normal_query(thing, key, value):
         "ops": [
             {
                 key: {
-                    f"${thing}": value
+                    "${0}".format(thing): value
                 }
             }
         ]
@@ -43,7 +43,7 @@ def test_query_in():
         "ops": [
             {
                 "a": {
-                    f"$in": ["b"]
+                    "$in": ["b"]
                 }
             }
         ]
@@ -65,7 +65,7 @@ def test_query_nin():
         "ops": [
             {
                 "a": {
-                    f"$nin": ["b"]
+                    "$nin": ["b"]
                 }
             }
         ]

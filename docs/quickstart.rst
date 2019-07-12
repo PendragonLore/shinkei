@@ -12,7 +12,7 @@ shinkei is available on PyPi so it can be installed through pip:
 
     pip install shinkei -U
 
-This library is compatible only with Python 3.6+ and has two main dependencies, `websockets <https://github.com/aaugustin/websockets>`_
+This library is compatible only with Python 3.5.3+ and has two main dependencies, `websockets <https://github.com/aaugustin/websockets>`_
 and `aiohttp <https://github.com/aio-libs/aiohttp>`_.
 
 It's also recommended to install `ujson <https://github.com/esnme/ultrajson>`_ for faster JSON encoding/decoding.
@@ -49,7 +49,7 @@ Receiver:
 
             # report every data sent with this async iterator
             async for data in conn.stream("data"):
-                print(f"Received {data.payload} from {data.sender}")
+                print("Received {0.payload} from {0.sender}".format(data))
 
 
     loop = asyncio.get_event_loop()

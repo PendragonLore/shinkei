@@ -18,7 +18,7 @@ The library is available on PyPi so it can be installed through pip:
 pip install shinkei -U
 ```
 
-This library is compatible only with Python 3.6+ and has two main dependencies, [websockets](https://github.com/aaugustin/websockets)
+This library is compatible only with Python 3.5.3+ and has two main dependencies, [websockets](https://github.com/aaugustin/websockets)
 and [aiohttp](https://github.com/aio-libs/aiohttp).
 
 It's also recommended to install [ujson](https://github.com/esnme/ultrajson) for faster JSON encoding/decoding.

@@ -32,7 +32,7 @@ This quickstart showcases an example of how to use shinkei in a discord bot made
 
         async def on_shinkei_data(self, data):
             """Receiving data is handled by bot.dispatch() and so this is possible."""
-            print(f"I received this data {data.payload} from {data.sender}")
+            print("I received this data {0.payload} from {0.sender}".format(data))
 
         async def send_to_shard(self, data, shard_id):
             """Send data to another shard in a different process.

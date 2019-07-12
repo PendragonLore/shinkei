@@ -72,7 +72,7 @@ See the following piece of code for an example:
     class CustomHandler(shinkei.Handler, name="custom"):
         @shinkei.listens_to("data")
         async def data_receiver(self, data):
-            print(f"{self.qualified_name} received {data.payload}!")
+            print("{0.qualified_name} received {1.payload}!".format(self, data))
 
 
     # somewhere else...

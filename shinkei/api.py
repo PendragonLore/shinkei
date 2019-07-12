@@ -59,7 +59,7 @@ class APIClient:
         if not isinstance(tags, list):
             raise TypeError("Expected type list, got {0}".format(tags.__class__.__name__))
         tags = json.dumps(tags)
-        url = (self.url / "discovery" / "tags").with_query(f"q={tags}")
+        url = (self.url / "discovery" / "tags").with_query("q={0}".format(tags))
 
         return await self.request("GET", url)
 
@@ -67,7 +67,7 @@ class APIClient:
         actual = method.upper()
 
         if actual not in self.METHODS:
-            raise ValueError(f"{actual} is not a supported HTTP method. (Valid methods are {self.METHODS})")
+            raise ValueError("{0} is not a supported HTTP method. (Valid methods are {1.METHODS})".format(actual, self))
 
         payload = {
             "method": actual,
