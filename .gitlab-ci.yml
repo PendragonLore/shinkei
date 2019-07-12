@@ -2,11 +2,14 @@ stages:
   - build
   - deploy
 
+variables:
+  SPHINXOPTS: "-W"
+
 alpine 3.6:
   stage: build
   image: python:3.6-alpine
   before_script:
-    - apk add --no-cache --virtual .build-deps gcc musl-dev linux-headers
+    - apk add --no-cache --virtual .build-deps gcc musl-dev linux-headers make
     - pip install .[ujson,docs,tests] -U wheel
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
@@ -25,7 +28,7 @@ alpine 3.7:
   stage: build
   image: python:3.7-alpine
   before_script:
-    - apk add --no-cache --virtual .build-deps gcc musl-dev linux-headers
+    - apk add --no-cache --virtual .build-deps gcc musl-dev linux-headers make
     - pip install .[ujson,docs,tests] -U wheel
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
@@ -42,9 +45,9 @@ alpine 3.7:
 
 alpine 3.8:
   stage: build
-  image: python:3.8-alpine
+  image: python:3.8-rc-alpine
   before_script:
-    - apk add --no-cache --virtual .build-deps gcc musl-dev linux-headers
+    - apk add --no-cache --virtual .build-deps gcc musl-dev linux-headers v
     - pip install .[ujson,docs,tests] -U wheel
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
@@ -97,7 +100,7 @@ stretch 3.7:
 
 stretch 3.8:
   stage: build
-  image: python:3.8-stretch
+  image: python:3.8-rc-stretch
   before_script:
     - pip install .[ujson,docs,tests] -U wheel
   script:
