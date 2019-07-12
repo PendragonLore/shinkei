@@ -4,7 +4,7 @@ A client library for [singyeong](https://github.com/queer/singyeong), a fully-dy
 
 For more info on how to configure and run a singyeong server visit the official repository previously linked.
 
-The binaries are available on [docker](https://hub.docker.com/r/queer/singyeong).
+The binaries for it are available on [docker](https://hub.docker.com/r/queer/singyeong).
 
 ### Credits
 
