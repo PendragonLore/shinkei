@@ -11,7 +11,7 @@ alpine 3.5:
   variables:
     ON_ALPINE: 1
   before_script:
-    - ./ci/install.sh
+    - ./.ci/install.sh
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
@@ -33,7 +33,7 @@ alpine 3.6:
   variables:
     ON_ALPINE: 1
   before_script:
-    - ./ci/install.sh
+    - ./.ci/install.sh
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
@@ -55,7 +55,7 @@ alpine 3.7:
   variables:
     ON_ALPINE: 1
   before_script:
-    - ./ci/install.sh
+    - ./.ci/install.sh
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
@@ -77,7 +77,7 @@ alpine 3.8:
   variables:
     ON_ALPINE: 1
   before_script:
-    - ./ci/install.sh
+    - ./.ci/install.sh
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
@@ -97,7 +97,7 @@ stretch 3.5:
   stage: build
   image: python:3.5-stretch
   before_script:
-    - ./ci/install.sh
+    - ./.ci/install.sh
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
@@ -117,7 +117,7 @@ stretch 3.6:
   stage: build
   image: python:3.6-stretch
   before_script:
-    - ./ci/install.sh
+    - ./.ci/install.sh
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
@@ -137,7 +137,7 @@ stretch 3.7:
   stage: build
   image: python:3.7-stretch
   before_script:
-    - ./ci/install.sh
+    - ./.ci/install.sh
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
@@ -157,7 +157,7 @@ stretch 3.8:
   stage: build
   image: python:3.8-rc-stretch
   before_script:
-    - ./ci/install.sh
+    - ./.ci/install.sh
   script:
     - PYTHONPATH="$(pwd)" pytest -vs
     - isort . --check-only --recursive
