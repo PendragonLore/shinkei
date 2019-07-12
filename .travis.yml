@@ -17,6 +17,7 @@ script:
   - "pytest -vs"
   - "isort . --check-only --recursive"
   - "cd docs && make html"
+  - "cd .."
 
 deploy:
   provider: pypi
