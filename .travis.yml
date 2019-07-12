@@ -30,6 +30,7 @@ deploy:
     - dist/*.egg
   file_glob: true
   skip_existing: true
+  skip_cleanup: true
   on:
     repo: PendragonLore/shinkei
     tags: true
