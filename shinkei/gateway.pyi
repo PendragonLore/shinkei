@@ -1,6 +1,6 @@
-from typing import List, Mapping, Optional, Union
+from typing import Dict, List, Optional, Union
 
-import websockets
+import websockets  # type: ignore
 # noinspection PyPackageRequirements
 from yarl import URL
 
@@ -31,7 +31,7 @@ class WSClient(websockets.WebSocketClientProtocol):
     async def create(cls, client: Client, url: URL, *, reconnect: bool) -> WSClient: ...
 
     @staticmethod
-    def set_attrs(ws: WSClient, client: Client, *, reconnect: bool) -> None: ...
+    def set_attrs(ws: WSClient, client: Client, *, reconnect: bool) -> None: ... # type: ignore
 
     async def poll_event(self) -> None: ...
 
@@ -47,7 +47,7 @@ class WSClient(websockets.WebSocketClientProtocol):
     async def broadcast_metadata(self, data: Union[str, dict, float, int, list], *, target: QueryBuilder,
                                  nonce: Optional[str] = ...) -> None: ...
 
-    async def update_metadata(self, data: Mapping[str, dict], *, cache: Optional[bool] = ...) -> None: ...
+    async def update_metadata(self, data: Dict[str, dict], *, cache: Optional[bool] = ...) -> None: ...
 
     async def recv_json(self) -> dict: ...
 

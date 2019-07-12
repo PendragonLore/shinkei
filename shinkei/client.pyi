@@ -1,6 +1,6 @@
 import asyncio
 from types import TracebackType
-from typing import Any, AsyncGenerator, Callable, Coroutine, Iterable, List, Mapping, Optional, Type, Union
+from typing import Any, Callable, Coroutine, Dict, Iterable, List, Mapping, Optional, Type, Union
 
 import aiohttp
 # noinspection PyPackageRequirements
@@ -9,6 +9,7 @@ from yarl import URL
 from .api import APIClient
 from .gateway import WSClient
 from .handlers import Handler
+from .iterators import StreamAsyncIterator
 from .objects import Version
 from .querybuilder import QueryBuilder
 
@@ -19,14 +20,26 @@ def connect(url: str, application_id: str, client_id: str,
             **kwargs) -> _ClientMixin: ...
 
 
+class CacheManager:
+    _internal: dict
+
+    def add(self, item: Union[dict, tuple]) -> None: ...
+
+    def pop_all(self) -> dict: ...
+
+    def __bool__(self) -> bool: ...
+
+    def __len__(self) -> int: ...
+
+
 # noinspection PyPropertyDefinition
 class Client:
     _waiters: dict
-    _internal_cache: list
+    _cache_manager: CacheManager
     _closed_event: asyncio.Event
 
     handlers: dict
-    schema_map: Mapping[str, str]
+    schema_map: Dict[str, str]
 
     loop: asyncio.AbstractEventLoop
     id: str
@@ -63,7 +76,7 @@ class Client:
     async def broadcast(self, data: Union[str, dict, float, int, list], *, target: QueryBuilder,
                         nonce: Any = ...) -> None: ...
 
-    async def update_metadata(self, data: Mapping[str, dict]) -> None: ...
+    async def update_metadata(self, data: Dict[str, dict]) -> None: ...
 
     async def proxy_request(self, method: str, route: str, *, target: QueryBuilder,
                             body: Optional[Union[str, dict, list]]) -> Any: ...
@@ -77,8 +90,8 @@ class Client:
     async def wait_for(self, event: str, *, timeout: Optional[Union[int, float]] = ...,
                        check: Optional[Callable[..., bool]] = ...) -> Any: ...
 
-    async def stream(self, event: str, *, timeout: Optional[Union[int, float]] = ...,
-                     check: Optional[Callable[..., bool]] = ..., limit: Optional[int] = ...) -> AsyncGenerator[Any]: ...
+    def stream(self, event: str, *, timeout: Optional[Union[int, float]] = ...,
+               check: Optional[Callable[..., bool]] = ..., limit: Optional[int] = ...) -> StreamAsyncIterator: ...
 
     async def close(self) -> None: ...
 

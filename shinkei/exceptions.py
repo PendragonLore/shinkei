@@ -7,6 +7,10 @@ class ShinkeiException(Exception):
     All following exceptions inherit from this."""
 
 
+class NoMoreItems(ShinkeiException):
+    pass
+
+
 class ShinkeiHTTPException(ShinkeiException):
     """Generic HTTP exception.
 

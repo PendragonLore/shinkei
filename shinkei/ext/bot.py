@@ -15,6 +15,7 @@ class BotWSClient(WSClient):
     def set_attrs(ws, client, *, reconnect):
         super().set_attrs(ws, client, reconnect=reconnect)
 
+        # noinspection PyUnresolvedReferences
         ws.bot = client.bot
 
     def _dispatch(self, name, *args):

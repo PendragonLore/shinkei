@@ -11,13 +11,15 @@ class BotWSClient(WSClient):
     client: BotClient
 
     @staticmethod
-    def set_attrs(ws: BotWSClient, client: BotClient, *, reconnect: bool) -> None: ...
+    def set_attrs(ws: BotWSClient, client: Client, *, reconnect: bool) -> None: ...
+
 
 class BotClient(Client):
     bot: Any
 
     # noinspection PyMethodOverriding
     @classmethod
+    # type: ignore
     async def _connect(cls: Type[BotClient], url: str, application_id: str, client_id: str,
                        auth: Optional[str] = ..., *, tags: Optional[list] = ..., reconnect: Optional[bool] = ...,
                        session: Optional[aiohttp.ClientSession] = ..., loop: Optional[asyncio.AbstractEventLoop] = ...,

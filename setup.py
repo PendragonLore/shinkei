@@ -48,9 +48,11 @@ extras = {
     "tests": [
         "pytest",
         "flake8",
-        "isort"
+        "isort",
+        "mypy"
     ]
 }
+
 setup(
     name="shinkei",
     author="Lorenzo",

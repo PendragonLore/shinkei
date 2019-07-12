@@ -1,5 +1,5 @@
 import asyncio
-from typing import Mapping, Optional, Set, Union
+from typing import Dict, Optional, Set, Union
 
 import aiohttp
 # noinspection PyPackageRequirements
@@ -30,4 +30,4 @@ class APIClient:
     async def discovery_tags(self, tags: list) -> dict: ...
 
     async def proxy(self, method: str, route: str, *, target: QueryBuilder, body: Union[dict, str] = ...,
-                    headers: Mapping[str, str] = ...): ...
+                    headers: Dict[str, str] = ...): ...

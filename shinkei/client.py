@@ -13,6 +13,7 @@ from .backoff import ExponentialBackoff
 from .exceptions import ShinkeiResumeWS, ShinkeiWSClosed
 from .gateway import WSClient
 from .handlers import Handler
+from .iterators import StreamAsyncIterator
 
 log = logging.getLogger(__name__)
 
@@ -82,6 +83,26 @@ def connect(url, application_id, client_id, auth=None, *,
                         session=session, loop=loop, tags=tags, klass=klass, handlers=handlers, **kwargs)
 
 
+class CacheManager:
+    def __init__(self):
+        self._internal = {}
+
+    def add(self, item):
+        self._internal.update(item)
+
+    def pop_all(self):
+        copy = self._internal.copy()
+        self._internal.clear()
+
+        return copy
+
+    def __bool__(self):
+        return bool(self._internal)
+
+    def __len__(self):
+        return len(self._internal.keys())
+
+
 # noinspection PyProtectedMember
 class Client:
     # noinspection PyUnresolvedReferences
@@ -107,7 +128,7 @@ class Client:
         self.handlers = {}
         self._waiters = {}
 
-        self._internal_cache = []
+        self._cache_manager = CacheManager()
         self._closed_event = asyncio.Event()
         self.schema_map = {"singyeong": "ws", "ssingyeong": "wss"}
 
@@ -250,7 +271,7 @@ class Client:
         body: Optional[Union[:class:`str`, :class:`dict`, :class:`list`]]
             The request body, silently ignored in GET and HEAD.
             If none is provided but the method requires one an empty string will be sent.
-        headers: Optional[Mapping[:class:`str`, :class:`str`]]
+        headers: Optional[Dict[:class:`str`, :class:`str`]]
             The request headers.
         target: :class:`QueryBuilder`
             The query that is used to match the client.
@@ -360,7 +381,7 @@ class Client:
 
         return await asyncio.wait_for(future, timeout=timeout)
 
-    async def stream(self, event, *, timeout=None, check=None, limit=None):
+    def stream(self, event, *, timeout=None, check=None, limit=None):
         """An async iterator which waits until an event is dispatched before
         continuing the iterations.
 
@@ -380,13 +401,7 @@ class Client:
         ------
         Any
             The return value of the event."""
-        count = 1
-
-        while True if limit is None else count <= limit:
-            if limit is not None:
-                count += 1
-
-            yield await self.wait_for(event, timeout=timeout, check=check)
+        return StreamAsyncIterator(self, event, timeout=timeout, check=check, limit=limit)
 
     async def close(self):
         """Close the connection to singyeong.

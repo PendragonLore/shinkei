@@ -2,6 +2,8 @@ import aiohttp
 
 class ShinkeiException(Exception): ...
 
+class NoMoreItems(ShinkeiException): ...
+
 
 class ShinkeiHTTPException(ShinkeiException):
     request: aiohttp.ClientResponse

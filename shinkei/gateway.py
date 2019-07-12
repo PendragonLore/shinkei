@@ -88,11 +88,10 @@ class WSClient(websockets.WebSocketClientProtocol):
             self.client.restricted = restricted = d["restricted"]
             if restricted:
                 log.warning("Client is restricted.")
-            cache = self.client._internal_cache
+            cache = self.client._cache_manager
             if cache:
                 log.info("Refreshing metadata, probably due to a reconnect (%d entries)", len(cache))
-                for payload in cache:
-                    await self.update_metadata(payload, cache=False)
+                await self.update_metadata(cache.pop_all(), cache=False)
             return
 
         if op == self.OP_INVALID:
@@ -198,9 +197,10 @@ class WSClient(websockets.WebSocketClientProtocol):
             "t": "UPDATE_METADATA",
             "d": data,
         }
+        await self.send_json(payload)
+
         if cache:
-            self.client._internal_cache.append(data)
-        return await self.send_json(payload)
+            self.client._cache_manager.add(data)
 
     async def recv_json(self):
         return json.loads(await self.recv())
