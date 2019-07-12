@@ -13,12 +13,7 @@ alpine 3.5:
   before_script:
     - ./.ci/install.sh
   script:
-    - PYTHONPATH="$(pwd)" pytest -vs
-    - isort . --check-only --recursive
-    - flake8 .
-    - mypy -p shinkei
-    - python ./setup.py sdist bdist_egg bdist_wheel
-    - cd docs && make html
+    - ./.ci/test.sh
   artifacts:
     paths:
       - dist
@@ -35,12 +30,7 @@ alpine 3.6:
   before_script:
     - ./.ci/install.sh
   script:
-    - PYTHONPATH="$(pwd)" pytest -vs
-    - isort . --check-only --recursive
-    - flake8 .
-    - mypy -p shinkei
-    - python ./setup.py sdist bdist_egg bdist_wheel
-    - cd docs && make html
+    - ./.ci/test.sh
   artifacts:
     paths:
       - dist
@@ -57,12 +47,7 @@ alpine 3.7:
   before_script:
     - ./.ci/install.sh
   script:
-    - PYTHONPATH="$(pwd)" pytest -vs
-    - isort . --check-only --recursive
-    - flake8 .
-    - mypy -p shinkei
-    - python ./setup.py sdist bdist_egg bdist_wheel
-    - cd docs && make html
+    - ./.ci/test.sh
   artifacts:
     paths:
       - dist
@@ -79,12 +64,7 @@ alpine 3.8:
   before_script:
     - ./.ci/install.sh
   script:
-    - PYTHONPATH="$(pwd)" pytest -vs
-    - isort . --check-only --recursive
-    - flake8 .
-    - mypy -p shinkei
-    - python ./setup.py sdist bdist_egg bdist_wheel
-    - cd docs && make html
+    - ./.ci/test.sh
   artifacts:
     paths:
       - dist
@@ -99,12 +79,7 @@ stretch 3.5:
   before_script:
     - ./.ci/install.sh
   script:
-    - PYTHONPATH="$(pwd)" pytest -vs
-    - isort . --check-only --recursive
-    - flake8 .
-    - mypy -p shinkei
-    - python ./setup.py sdist bdist_egg bdist_wheel
-    - cd docs && make html
+    - ./.ci/test.sh
   artifacts:
     paths:
       - dist
@@ -119,12 +94,7 @@ stretch 3.6:
   before_script:
     - ./.ci/install.sh
   script:
-    - PYTHONPATH="$(pwd)" pytest -vs
-    - isort . --check-only --recursive
-    - flake8 .
-    - mypy -p shinkei
-    - python ./setup.py sdist bdist_egg bdist_wheel
-    - cd docs && make html
+    - ./.ci/test.sh
   artifacts:
     paths:
       - dist
@@ -139,12 +109,7 @@ stretch 3.7:
   before_script:
     - ./.ci/install.sh
   script:
-    - PYTHONPATH="$(pwd)" pytest -vs
-    - isort . --check-only --recursive
-    - flake8 .
-    - mypy -p shinkei
-    - python ./setup.py sdist bdist_egg bdist_wheel
-    - cd docs && make html
+    - ./.ci/test.sh
   artifacts:
     paths:
       - dist
@@ -159,12 +124,7 @@ stretch 3.8:
   before_script:
     - ./.ci/install.sh
   script:
-    - PYTHONPATH="$(pwd)" pytest -vs
-    - isort . --check-only --recursive
-    - flake8 .
-    - mypy -p shinkei
-    - python ./setup.py sdist bdist_egg bdist_wheel
-    - cd docs && make html
+    - ./.ci/test.sh
   artifacts:
     paths:
       - dist
