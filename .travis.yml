@@ -2,44 +2,47 @@ dist: xenial
 
 language: python
 
-env:
-  - SPHINXOPTS="-W"
-
-install:
-  - pip install -r requirements.txt -U wheel
-  - pip install -U .[docs,ujson,tests]
-
-before_script:
-  - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
-
-script:
-  - "pytest -vs"
-  - "isort . --check-only --recursive"
-  - "flake8 ."
-  - "cd docs && make html"
-  - "cd .."
-  - 'if [[ -z "$TRAVIS_TAG" ]]; then python setup.py sdist bdist_wheel bdist_egg; fi'
-  # build only if we are not deploying
-
-matrix:
+jobs:
   include:
-  - python: 3.6
-  - python: 3.7
-  - python: 3.8-dev
-
-deploy:
-  provider: pypi
-  user: "LorePendragon"
-  password:
-    secure: LazvziC1fcGNWzEeYTTq1zsO9DOkQq4ekYUpo+QJHpM5wh2rqV1nTT/qpMm717lxjjupr+0IJLW/6z99jB0Q4MvpjaW5lSGRZjH0wi0uawCOMzYEyqlJj4RhMM+brXYMVdq7JLgeFTqR5a8nQAZ26WQSqFk4DVizxSUSt1RDvOPJwph/hhDbV8tI4d+LdHgNAPFGmxOj+ECMZR9f7d+FDmVtEuDMSZlO97fh2C1C3alzQobW21eYxPW+J6pMoHtDReZSfH0muDXdjbonVKvzF6zrY2Ui0SnHo1VIQD1jLScaUpD9WdO5hDw7UDTI/aH0jgUCnbj8cVNHohxiUNMkmODi5/x71dp7Pi5WEqIEZ0BqFVVx/BbQZOc9eqwFVNMxiO3tZEe0P7JWZZaPXSPwoGj0G0XJi18mrUVRCaubvZWCR3m/NrHPoMEMAHfvkOiPKxbsUvr8S02c7qBCgayWxPSilq5bT3D8mYL4GPjy4nUoG93k4X6bwYIO6orME6SA/Q/VUhbcyjpI5kWKzKGuM1kfasf9fcAQ5RwgJWR+PBD88N3bsXCd0CStIFVg/1OxGXl6XEgT374+iIq2hqDSCZdtygT//S68OEBsb5NzQwMUoTo27VHf6/bWY9MJ5v42JbOssTa8Wa0oK2/77M3rFj6ryAE7/wCd3QGmJ474WQs=
-  distributions: "sdist bdist_wheel bdist_egg"
-  file:
-    - dist/*.whl
-    - dist/*.tar.gz
-    - dist/*.egg
-  file_glob: true
-  skip_existing: true
-  skip_cleanup: true
-  on:
-    repo: PendragonLore/shinkei
-    tags: true
+    - stage: test
+      python:
+        - "3.6"
+        - "3.8-dev"
+        - "3.7"
+      env:
+        - SPHINXOPTS="-W"
+      install:
+        - pip install -r requirements.txt -U wheel
+        - pip install -U .[docs,ujson,tests]
+      before_script:
+        - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
+      script:
+        - "pytest -vs"
+        - "isort . --check-only --recursive"
+        - "flake8 ."
+        - "cd docs && make html"
+        - "cd .."
+        - 'if [[ -z "$TRAVIS_TAG" ]]; then python setup.py sdist bdist_wheel bdist_egg; fi'
+        # build only if we are not deploying
+    - stage: deploy
+      python:
+        - "3.6"
+        - "3.8-dev"
+        - "3.7"
+      script: skip
+      deploy:
+        provider: pypi
+        user: "LorePendragon"
+        password:
+          secure: LazvziC1fcGNWzEeYTTq1zsO9DOkQq4ekYUpo+QJHpM5wh2rqV1nTT/qpMm717lxjjupr+0IJLW/6z99jB0Q4MvpjaW5lSGRZjH0wi0uawCOMzYEyqlJj4RhMM+brXYMVdq7JLgeFTqR5a8nQAZ26WQSqFk4DVizxSUSt1RDvOPJwph/hhDbV8tI4d+LdHgNAPFGmxOj+ECMZR9f7d+FDmVtEuDMSZlO97fh2C1C3alzQobW21eYxPW+J6pMoHtDReZSfH0muDXdjbonVKvzF6zrY2Ui0SnHo1VIQD1jLScaUpD9WdO5hDw7UDTI/aH0jgUCnbj8cVNHohxiUNMkmODi5/x71dp7Pi5WEqIEZ0BqFVVx/BbQZOc9eqwFVNMxiO3tZEe0P7JWZZaPXSPwoGj0G0XJi18mrUVRCaubvZWCR3m/NrHPoMEMAHfvkOiPKxbsUvr8S02c7qBCgayWxPSilq5bT3D8mYL4GPjy4nUoG93k4X6bwYIO6orME6SA/Q/VUhbcyjpI5kWKzKGuM1kfasf9fcAQ5RwgJWR+PBD88N3bsXCd0CStIFVg/1OxGXl6XEgT374+iIq2hqDSCZdtygT//S68OEBsb5NzQwMUoTo27VHf6/bWY9MJ5v42JbOssTa8Wa0oK2/77M3rFj6ryAE7/wCd3QGmJ474WQs=
+        distributions: "sdist bdist_wheel bdist_egg"
+        file:
+          - dist/*.whl
+          - dist/*.tar.gz
+          - dist/*.egg
+        file_glob: true
+        skip_existing: true
+        skip_cleanup: true
+        on:
+          repo: PendragonLore/shinkei
+          tags: true
