@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-printf " [32;1m$ pytest [0;m\n"
+echo " $ pytest"
 PYTHONPATH="$(pwd)" pytest -vs
-printf " [32;1m$ isort [0;m\n"
+echo " $ isort"
 isort . --check-only --recursive
-printf " [32;1m$ flake8 [0;m\n"
+echo " $ flake8"
 flake8 .
-printf " [32;1m$ mypy [0;m\n"
+echo " $ mypy"
 mypy -p shinkei
-printf " [32;1m$ pydocstyle [0;m\n"
+echo " $ pydocstyle"
 pydocstyle shinkei
 
 python ./setup.py sdist bdist_egg bdist_wheel
