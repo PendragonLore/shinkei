@@ -73,7 +73,7 @@ class QueryBuilder:
         return self._single_strategy("eq", key, value)
 
     def ne(self, key, value):
-        """Match if the value of ``key`` is not equal to ``value`."""
+        """Match if the value of ``key`` is not equal to ``value``."""
         return self._single_strategy("ne", key, value)
 
     def gt(self, key, value):
