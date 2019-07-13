@@ -12,7 +12,6 @@ Special thanks to [amy (queer)](https://github.com/queer/) for creating and help
 [Rapptz (Danny)](https://github.com/Rapptz) for the amazing docs addon and overall heavily inspiring this lib's design 
 through [discord.py](https://github.com/Rapptz/discord.py).
 
-
 ## Installation
 
 The library is available on PyPi so it can be installed through pip:
@@ -21,16 +20,18 @@ The library is available on PyPi so it can be installed through pip:
 pip install shinkei -U
 ```
 
-This library is compatible only with Python 3.5.3+ and has two main dependencies, [websockets](https://github.com/aaugustin/websockets)
-and [aiohttp](https://github.com/aio-libs/aiohttp).
+### Requirements
 
-It's also recommended to install [ujson](https://github.com/esnme/ultrajson) for faster JSON encoding/decoding.
+* Python 3.5.3+
+* [websockets](https://github.com/aaugustin/websockets) 6.0
+* [aiohttp](https://github.com/aio-libs/aiohttp) 3.3.0+
 
-The library can be installed with this extra dependency through this command:
+These should already be handled by ``pip``.
 
-```bash
-pip install shinkei[ujson] -U
-```
+#### Optional
+
+* [ujson](https://github.com/esnme/ultrajson) (For faster json encoding/decoding)
+    - ``pip install shinkei[ujson] -U``
 
 ## Documentation
 

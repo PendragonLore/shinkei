@@ -44,4 +44,4 @@ class MetadataPayload:
         self.payload = data["payload"]
 
     def __repr__(self):
-        return "<MetadataPayload sender={0.sender!r} nonce={0.nonce}>".format(self)
+        return "<MetadataPayload sender={0.sender!r} nonce={0.nonce!r}>".format(self)

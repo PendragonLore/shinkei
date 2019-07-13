@@ -4,7 +4,7 @@
 class QueryBuilder:
     """A utility to build queries which routes clients based on their metadata.
 
-    Used mostly in :meth:`Client.send` and :meth:`Client.broadcast`
+    Used mostly in :meth:`Client.send` and :meth:`Client.broadcast`.
 
     Example using key-value queries:
 
