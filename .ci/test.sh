@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-echo " $ pytest"
+echo "$ pytest"
 PYTHONPATH="$(pwd)" pytest -vs
-echo " $ isort"
+echo "$ isort"
 isort . --check-only --recursive
-echo " $ flake8"
+echo "$ flake8"
 flake8 .
-echo " $ mypy"
+echo "$ mypy"
 mypy -p shinkei
-echo " $ pydocstyle"
+echo "$ pydocstyle"
 pydocstyle shinkei
 
 python ./setup.py sdist bdist_egg bdist_wheel
