@@ -15,14 +15,16 @@ class HandlerMeta(type):
 
     .. code-block:: python3
 
-        class MyHandler(shinkei.Handler, name=\"My Handler\"):
+        class MyHandler(shinkei.Handler, name="My Handler"):
             pass
 
     Arguments
-    ----------
+    ---------
     name: Optional[:class:`str`]
         The name of the handler, used to determine if it has already been registered or not.
-        Defaults to the class's name."""
+        Defaults to the class's name.
+    """
+
     def __new__(mcs, *args, **kwargs):
         name, bases, attrs = args
 
@@ -59,8 +61,8 @@ class HandlerMeta(type):
         return new_cls
 
 
-def listens_to(name):
-    """A decorator to register a method of a :class:`Handler` as a listener.
+def listens_to(name):  # noqa: D401
+    """Decorator to register a method of a :class:`Handler` as a listener.
 
     The method must be a coroutine.
 
@@ -72,7 +74,8 @@ def listens_to(name):
     Raises
     ------
     TypeError
-        The name was not a string or the method was not a coroutine."""
+        The name was not a string or the method was not a coroutine.
+    """
     if not isinstance(name, str):
         raise TypeError("Name must be str, got {0.__class__.__name__} instead.".format(name))
 
@@ -94,7 +97,9 @@ def listens_to(name):
 class Handler(metaclass=HandlerMeta):
     """The base class for event handlers.
 
-    This class is made only for subclassing."""
+    This class is made only for subclassing.
+    """
+
     @property
     def qualified_name(self):
         """:class:`str`: The name passed in the type constructor or the class' name if none was provided."""

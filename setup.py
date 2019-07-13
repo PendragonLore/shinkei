@@ -49,7 +49,8 @@ extras = {
         "pytest",
         "flake8",
         "isort",
-        "mypy"
+        "mypy",
+        "pydocstyle"
     ]
 }
 

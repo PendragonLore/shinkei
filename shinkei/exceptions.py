@@ -4,7 +4,8 @@
 class ShinkeiException(Exception):
     """Base exception for this library.
 
-    All following exceptions inherit from this."""
+    All following exceptions inherit from this.
+    """
 
 
 class NoMoreItems(ShinkeiException):
@@ -21,7 +22,8 @@ class ShinkeiHTTPException(ShinkeiException):
     code: :class:`int`
         The request status code.
     message: :class:`str`
-        A error message."""
+        A error message.
+    """
 
     def __init__(self, request, code, message):
         self.request = request
@@ -37,7 +39,8 @@ class ShinkeiWSException(ShinkeiException):
     Attributes
     ----------
     message: :class:`str`
-        A error message."""
+        A error message.
+    """
 
     def __init__(self, message):
         self.message = message
@@ -51,7 +54,8 @@ class ShinkeiResumeWS(ShinkeiException):
     Attributes
     ----------
     message: :class:`str`
-        A error message."""
+        A error message.
+    """
 
     def __init__(self, message):
         self.message = message
@@ -67,7 +71,8 @@ class ShinkeiWSClosed(ShinkeiException):
     code: :class:`int`
         The WebSocket status code.
     message: :class:`str`
-        A error message."""
+        A error message.
+    """
 
     def __init__(self, message, code):
         self.code = code

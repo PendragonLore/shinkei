@@ -33,7 +33,8 @@ class QueryBuilder:
         Defaults to ``False``.
     optional: Optional[:class:`bool`]
         Whether or not to return a result even if the query fails.
-        Defaults to ``False``."""
+        Defaults to ``False``.
+    """
 
     __slots__ = (
         "_ops",
@@ -68,69 +69,76 @@ class QueryBuilder:
         return self
 
     def eq(self, key, value):
-        """Matches if the value of ``key`` equals to ``value``"""
+        """Match if the value of ``key`` equals to ``value``."""
         return self._single_strategy("eq", key, value)
 
     def ne(self, key, value):
-        """Matches if the value of ``key`` is not equal to ``value``"""
+        """Match if the value of ``key`` is not equal to ``value`."""
         return self._single_strategy("ne", key, value)
 
     def gt(self, key, value):
-        """Matches if the value of ``key`` is greater then ``value``"""
+        """Match if the value of ``key`` is greater then ``value``."""
         return self._single_strategy("gt", key, value)
 
     def gte(self, key, value):
-        """Matches if the value of ``key`` is equal to or greater then ``value``"""
+        """Match if the value of ``key`` is equal to or greater then ``value``."""
         return self._single_strategy("gte", key, value)
 
     def lt(self, key, value):
-        """Matches if the value of ``key`` is lower then ``value``"""
+        """Match if the value of ``key`` is lower then ``value``."""
         return self._single_strategy("lt", key, value)
 
     def lte(self, key, value):
-        """Matches if the value of ``key`` is equal to or lower then ``value``"""
+        """Match if the value of ``key`` is equal to or lower then ``value``."""
         return self._single_strategy("lte", key, value)
 
     def inside(self, key, value):
-        """Matches if the value of ``key`` is inside ``value``.
+        """Match if the value of ``key`` is inside ``value``.
 
-        ``value`` must be a :class:`list`."""
+        ``value`` must be a :class:`list`.
+        """
         return self._single_strategy("in", key, value)
 
     def ninside(self, key, value):
-        """Matches if the value of ``key`` is not inside ``value``.
+        """Match if the value of ``key`` is not inside ``value``.
 
-        ``value`` must be a :class:`list`."""
+        ``value`` must be a :class:`list`.
+        """
         return self._single_strategy("nin", key, value)
 
     def contains(self, key, value):
-        """Matches if ``value`` is inside the value of ``key``.
+        """Match if ``value`` is inside the value of ``key``.
 
-        The value of ``key`` must be a :class:`list`."""
+        The value of ``key`` must be a :class:`list`.
+        """
         return self._single_strategy("contains", key, value)
 
     def ncontains(self, key, value):
-        """Matches if ``value`` is not inside the value of ``key``.
+        """Match if ``value`` is not inside the value of ``key``.
 
-        The value of ``key`` must be a :class:`list`."""
+        The value of ``key`` must be a :class:`list`.
+        """
         return self._single_strategy("ncontains", key, value)
 
     def also(self, key, node):
-        """Matches if all the predicates in ``node`` succeed.
+        """Match if all the predicates in ``node`` succeed.
 
-        ``node`` must be an instance of :class:`Node`."""
+        ``node`` must be an instance of :class:`Node`.
+        """
         return self._multiple_stategy("and", key, node)
 
     def either(self, key, node):
-        """Matches if any of the predicates in ``node`` succeed.
+        """Match if any of the predicates in ``node`` succeed.
 
-        ``node`` must be an instance of :class:`Node`."""
+        ``node`` must be an instance of :class:`Node`.
+        """
         return self._multiple_stategy("or", key, node)
 
     def neither(self, key, node):
-        """Matches if no predicates in ``node`` succeed.
+        """Match if no predicates in ``node`` succeed.
 
-        ``node`` must be an instance of :class:`Node`."""
+        ``node`` must be an instance of :class:`Node`.
+        """
         return self._multiple_stategy("nor", key, node)
 
     def to_json(self):
@@ -139,8 +147,12 @@ class QueryBuilder:
 
 
 class Node:
-    """Similar to :class:`QueryBuilder`, but used only for
-    predicates inside :meth:`~QueryBuilder.also`, :meth:`~QueryBuilder.either` and :meth:`~QueryBuilder.neither`."""
+    """Similar to :class:`QueryBuilder`.
+
+    Used only for predicates inside :meth:`~QueryBuilder.also`,
+    :meth:`~QueryBuilder.either` and :meth:`~QueryBuilder.neither`.
+    """
+
     __slots__ = ("_ops",)
 
     def __init__(self):
@@ -152,43 +164,43 @@ class Node:
         return self
 
     def eq(self, value):
-        """Equals to :meth:`QueryBuilder.eq`, but only takes a value."""
+        """Equal to :meth:`QueryBuilder.eq`, but only takes a value."""
         return self._single_strategy("eq", value)
 
     def ne(self, value):
-        """Equals to :meth:`QueryBuilder.ne`, but only takes a value."""
+        """Equal to :meth:`QueryBuilder.ne`, but only takes a value."""
         return self._single_strategy("ne", value)
 
     def gt(self, value):
-        """Equals to :meth:`QueryBuilder.gt`, but only takes a value."""
+        """Equal to :meth:`QueryBuilder.gt`, but only takes a value."""
         return self._single_strategy("gt", value)
 
     def gte(self, value):
-        """Equals to :meth:`QueryBuilder.gte`, but only takes a value."""
+        """Equal to :meth:`QueryBuilder.gte`, but only takes a value."""
         return self._single_strategy("gte", value)
 
     def lt(self, value):
-        """Equals to :meth:`QueryBuilder.lt`, but only takes a value."""
+        """Equal to :meth:`QueryBuilder.lt`, but only takes a value."""
         return self._single_strategy("lt", value)
 
     def lte(self, value):
-        """Equals to :meth:`QueryBuilder.lte`, but only takes a value."""
+        """Equal to :meth:`QueryBuilder.lte`, but only takes a value."""
         return self._single_strategy("lte", value)
 
     def inside(self, value):
-        """Equals to :meth:`QueryBuilder.inside`, but only takes a value."""
+        """Equal to :meth:`QueryBuilder.inside`, but only takes a value."""
         return self._single_strategy("in", value)
 
     def ninside(self, value):
-        """Equals to :meth:`QueryBuilder.ninside`, but only takes a value."""
+        """Equal to :meth:`QueryBuilder.ninside`, but only takes a value."""
         return self._single_strategy("nin", value)
 
     def contains(self, value):
-        """Equals to :meth:`QueryBuilder.contains`, but only takes a value."""
+        """Equal to :meth:`QueryBuilder.contains`, but only takes a value."""
         return self._single_strategy("contains", value)
 
     def ncontains(self, value):
-        """Equals to :meth:`QueryBuilder.ncontains`, but only takes a value."""
+        """Equal to :meth:`QueryBuilder.ncontains`, but only takes a value."""
         return self._single_strategy("ncontains", value)
 
     def to_json(self):

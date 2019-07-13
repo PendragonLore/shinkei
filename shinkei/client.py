@@ -75,10 +75,12 @@ def connect(url, application_id, client_id, auth=None, *,
     kwargs
         All other kwargs will be passed onto the Client class' ``_connect`` method.
         Useful when passing a custom class.
+
     Returns
     -------
     A context manager mixin of :class:`Client`
-        The client."""
+        The client.
+    """
     return _ClientMixin(url, application_id, client_id, auth, reconnect=reconnect,
                         session=session, loop=loop, tags=tags, klass=klass, handlers=handlers, **kwargs)
 
@@ -122,7 +124,8 @@ class Client:
         A client is restricted usually when it fails to provide
         the right password.
     version: :class:`Version`
-        A :class:`Version` object representing the singyeong and api version."""
+        A :class:`Version` object representing the singyeong and api version.
+    """
 
     def __init__(self):
         self.handlers = {}
@@ -195,7 +198,8 @@ class Client:
         Raises
         ------
         ShinkeiWSException
-            The client is restricted."""
+            The client is restricted.
+        """
         return await self._ws.send_metadata(data, target=target, nonce=nonce)
 
     async def broadcast(self, data, *, target, nonce=None):
@@ -216,7 +220,8 @@ class Client:
         Raises
         ------
         ShinkeiWSException
-            The client is restricted."""
+            The client is restricted.
+        """
         return await self._ws.broadcast_metadata(data, target=target, nonce=nonce)
 
     async def update_metadata(self, data, *, cache=True):
@@ -252,10 +257,12 @@ class Client:
         cache: Optional[:class:`bool`]
             Whether or not to cache the metadata and send it back on reconnects.
             Defaults to ``True``.
+
         Raises
         ------
         ShinkeiWSException
-            The metadata structure was invalid or a restricted key was used."""
+            The metadata structure was invalid or a restricted key was used.
+        """
         return await self._ws.update_metadata(data, cache=cache)
 
     async def proxy_request(self, method, route, *, target, body=None, headers=None):
@@ -286,7 +293,8 @@ class Client:
         ValueError
             An unsupported request method was passed.
         ShinkeiHTTPException
-            The HTTP proxy request failed."""
+            The HTTP proxy request failed.
+        """
         return await self._rest.proxy(method, route, target=target, headers=headers, body=body)
 
     async def discover(self, tags):
@@ -305,12 +313,13 @@ class Client:
         Raises
         ------
         TypeError
-            The ``tags`` argument wasn't a :class:`list`."""
+            The ``tags`` argument wasn't a :class:`list`.
+        """
         ret = await self._rest.discovery_tags(tags)
 
         return ret.get("result")
 
-    def add_handler(self, handler):
+    def add_handler(self, handler):  # noqa: D401
         """A function used to manually add handler to the client.
 
         Arguments
@@ -329,7 +338,8 @@ class Client:
             ``handler`` was not an instance of :class:`Handler`
         ValueError
             The handler was already registered.
-            This is determined by the name of the handler."""
+            This is determined by the name of the handler.
+        """
         if not isinstance(handler, Handler):
             raise TypeError("handler must be an instance of Handler, got {0}".format(handler.__class__.__name__))
         name = handler.qualified_name
@@ -350,7 +360,8 @@ class Client:
         Returns
         -------
         Optional[:class:`Handler`]
-            The handler, or ``None`` if it wasn't removed."""
+            The handler, or ``None`` if it wasn't removed.
+        """
         return self.handlers.pop(handler_name, None)
 
     async def wait_for(self, event, *, timeout=None, check=None):
@@ -370,7 +381,8 @@ class Client:
         Returns
         -------
         Any
-            The return value of the event."""
+            The return value of the event.
+        """
         future = self.loop.create_future()
 
         if check is None:
@@ -381,9 +393,8 @@ class Client:
 
         return await asyncio.wait_for(future, timeout=timeout)
 
-    def stream(self, event, *, timeout=None, check=None, limit=None):
-        """An async iterator which waits until an event is dispatched before
-        continuing the iterations.
+    def stream(self, event, *, timeout=None, check=None, limit=None):  # noqa: D401
+        """Return an async iterator which waits until an event is dispatched before continuing the iterations.
 
         Arguments
         ---------
@@ -400,13 +411,15 @@ class Client:
         Yields
         ------
         Any
-            The return value of the event."""
+            The return value of the event.
+        """
         return StreamAsyncIterator(self, event, timeout=timeout, check=check, limit=limit)
 
     async def close(self):
         """Close the connection to singyeong.
 
-        Run this when cleaning up."""
+        Run this when cleaning up.
+        """
         self._closed_event.set()
         if not self._rest.session.closed:
             await self._rest.session.close()

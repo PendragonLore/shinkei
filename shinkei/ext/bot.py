@@ -59,17 +59,15 @@ class BotClient(Client):
         return self
 
     def add_handler(self, handler):
-        """This method now raises a :exc:`NotImplementedError`
-        due to dispatching being handled by :meth:`discord.Client.dispatch` prefixed by ``shinkei_``."""
+        """Events are now handled by bot listeners so this method now raises a :exc:`NotImplementedError`."""
         raise NotImplementedError("add_handler() cannot be used with BotClient "
                                   "(events are dispatched through bot.dispatch('shinkei_{event_name}'))")
 
     def remove_handler(self, handler_name):
-        """This method now raises a :exc:`NotImplementedError`
-        due to dispatching being handled by :meth:`discord.Client.dispatch` prefixed by ``shinkei_``."""
+        """Events are now handled by bot listeners so this method now raises a :exc:`NotImplementedError`."""
         raise NotImplementedError("remove_handler() cannot be used with BotClient "
                                   "(events are dispatched through bot.dispatch('shinkei_{event_name}'))")
 
     async def wait_for(self, event, *, timeout=None, check=None):
-        """This is now just a proxy to :meth:`discord.Client.wait_for`."""
+        """Proxy to :meth:`discord.Client.wait_for`."""
         return await self.bot.wait_for(event, timeout=timeout, check=check)

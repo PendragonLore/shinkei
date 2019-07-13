@@ -1,0 +1,3 @@
+[pydocstyle]
+match = .*\.py
+ignore = D1,D203,D212,D213,D402,D413,D105,D416

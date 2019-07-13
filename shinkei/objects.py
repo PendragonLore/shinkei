@@ -9,7 +9,9 @@ class Version:
     api: :class:`str`
         The API version, in ``vN`` format.
     singyeong: :class:`str`
-        The singyeong version, in ``x.y.z`` format."""
+        The singyeong version, in ``x.y.z`` format.
+    """
+
     __slots__ = ("api", "singyeong")
 
     def __init__(self, data):
@@ -30,7 +32,9 @@ class MetadataPayload:
     nonce
         A unique nonce used to identify the payload.
     payload: Union[:class:`str`, :class:`int`, :class:`float`, :class:`list`, :class:`dict`]
-        The payload."""
+        The payload.
+    """
+
     __slots__ = ("sender", "nonce", "payload")
 
     def __init__(self, data):
