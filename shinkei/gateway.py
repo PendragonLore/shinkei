@@ -179,6 +179,7 @@ class WSClient(websockets.WebSocketClientProtocol):
     async def broadcast_metadata(self, data, *, target, nonce=None):
         if self.client.restricted:
             raise ShinkeiWSException("Restricted clients cannot BROADCAST.")
+
         payload = {
             "op": self.OP_DISPATCH,
             "t": "BROADCAST",
