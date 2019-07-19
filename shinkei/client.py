@@ -387,7 +387,7 @@ class Client:
             Same as :meth:`Client.wait_for`.
         limit: Optional[:class:`int`]
             The maximum amount of iteration before the iterator stops.
-            By default it never stops.
+            By default it never does.
 
         Yields
         ------
