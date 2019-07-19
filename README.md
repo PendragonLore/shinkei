@@ -1,5 +1,9 @@
 # shinkei
 
+[![Pipeline Status](https://img.shields.io/gitlab/pipeline/PendragonLore/shinkei.svg)](https://gitlab.com/PendragonLore/shinkei/pipelines)
+[![ReadTheDocs Status](https://img.shields.io/readthedocs/shinkei.svg)](https://readthedocs.org/projects/async-pokepy/)
+
+
 A client library for [singyeong](https://github.com/queer/singyeong), a fully-dynamic, metadata-oriented service mesh.
 
 For more info on how to configure and run a singyeong server visit the official repository previously linked.
