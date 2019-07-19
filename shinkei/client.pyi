@@ -1,6 +1,6 @@
 import asyncio
 from types import TracebackType
-from typing import Any, Callable, Coroutine, Dict, Iterable, List, Mapping, Optional, Type, Union
+from typing import Any, Callable, Coroutine, Dict, Iterable, List, Optional, Type, Union
 
 import aiohttp
 # noinspection PyPackageRequirements
@@ -10,7 +10,7 @@ from .api import APIClient
 from .gateway import WSClient
 from .handlers import Handler
 from .iterators import StreamAsyncIterator
-from .objects import Version
+from .objects import Version, VersionMetadata
 from .querybuilder import QueryBuilder
 
 def connect(url: str, application_id: str, client_id: str,
@@ -76,7 +76,7 @@ class Client:
     async def broadcast(self, data: Union[str, dict, float, int, list], *, target: QueryBuilder,
                         nonce: Any = ...) -> None: ...
 
-    async def update_metadata(self, data: Dict[str, dict]) -> None: ...
+    async def update_metadata(self, data: Dict[str, Union[str, list, float, int, VersionMetadata]]) -> None: ...
 
     async def proxy_request(self, method: str, route: str, *, target: QueryBuilder,
                             body: Optional[Union[str, dict, list]]) -> Any: ...

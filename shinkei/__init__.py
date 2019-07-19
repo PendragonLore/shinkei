@@ -13,7 +13,7 @@ from . import ext  # noqa: F401
 from .client import Client, connect  # noqa: F401
 from .exceptions import *  # noqa: F401
 from .handlers import Handler, HandlerMeta, listens_to  # noqa: F401
-from .objects import MetadataPayload, Version  # noqa: F401
+from .objects import MetadataPayload, Version, VersionMetadata  # noqa: F401
 from .querybuilder import Node, QueryBuilder  # noqa: F401
 
 try:

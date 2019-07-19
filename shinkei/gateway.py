@@ -6,7 +6,7 @@ import websockets
 
 from .exceptions import ShinkeiResumeWS, ShinkeiWSClosed, ShinkeiWSException
 from .keepalive import KeepAlivePls
-from .objects import MetadataPayload
+from .objects import MetadataPayload, VersionMetadata
 
 try:
     import ujson as json
@@ -192,7 +192,27 @@ class WSClient(websockets.WebSocketClientProtocol):
         }
         return await self.send_json(payload)
 
+    @staticmethod
+    def _make_metadata_packet(data):
+        type_mapping = {
+            str: "string",
+            int: "integer",
+            float: "float",
+            list: "list",
+            VersionMetadata: "version"
+        }
+
+        try:
+            return {key: {
+                "value": (value.fmt if isinstance(value, VersionMetadata) else value),
+                "type": type_mapping[type(value)]}
+                for key, value in data.items()
+            }
+        except KeyError:
+            raise TypeError("Invalid metdata type passed.")
+
     async def update_metadata(self, data, *, cache=True):
+        data = self._make_metadata_packet(data)
         payload = {
             "op": self.OP_DISPATCH,
             "t": "UPDATE_METADATA",

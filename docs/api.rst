@@ -106,6 +106,8 @@ Data Classes
 
 .. autoclass:: MetadataPayload()
 
+.. autoclass:: VersionMetadata
+
 
 Exceptions
 ----------

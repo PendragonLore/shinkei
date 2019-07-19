@@ -225,35 +225,16 @@ class Client:
         return await self._ws.broadcast_metadata(data, target=target, nonce=nonce)
 
     async def update_metadata(self, data, *, cache=True):
-        """Update metadata on singyeong.
+        r"""Update metadata on singyeong.
 
         The data is not consistent between server restarts but
         if ``cache`` is set to ``True`` then it will persist between reconnects.
 
-        ``data`` must have a structure similar to the following dictionary:
-
-        .. code-block:: python3
-
-            {
-              "key": {
-                "value": "hi!",
-                "type": "string",
-              },
-              "key2": {
-                "value": 123,
-                "type": "integer",
-              },
-            }
-
-        ``data`` keys cannot be one of ``ip``, ``restricted``, ``encoding`` or ``last_heartbeat_time``.
-        Valid ``type`` keys are ``string``, ``integer``, ``float``, ``list`` and
-        ``version`` see `here <https://hexdocs.pm/elixir/Version.html>`_ for specifications about the ladder.
-
         Arguments
         ---------
-        data: :class:`dict`
+        data: Dict[:class:`str`, Union[``str``, :class:`int`, :class:`float`, :class:`list`, :class:`VersionMetadata`]]
             The metadata to update.
-            Must be JSON serializable.
+            Keys cannot be one of ``ip``, ``restricted``, ``encoding`` or ``last_heartbeat_time``.
         cache: Optional[:class:`bool`]
             Whether or not to cache the metadata and send it back on reconnects.
             Defaults to ``True``.

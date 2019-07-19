@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import re
+
 
 class Version:
     """An object representing the API and singyeong version.
@@ -45,3 +47,65 @@ class MetadataPayload:
 
     def __repr__(self):
         return "<MetadataPayload sender={0.sender!r} nonce={0.nonce!r}>".format(self)
+
+
+class VersionMetadata:
+    """An object to represent a version object in :meth:`Client.update_metadata`.
+
+    This is *NOT* the same as :class:`Version`.
+
+    Parameters
+    ----------
+    fmt: :class:`str`
+        The version string.
+        Must be complient to the `elixir specification <https://hexdocs.pm/elixir/Version.html>`_."""
+    __slots__ = ("fmt", "_groups")
+
+    # from the official Semantic Versioning repo.
+    VALIDATION_REGEX = re.compile(r"""
+    ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)
+    (?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)
+    (?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?
+    (?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+    """, re.VERBOSE)
+
+    def __init__(self, fmt):
+        match = self.VALIDATION_REGEX.match(fmt)
+        if not match or not match.group(0):
+            raise ValueError("Invalid version format.")
+
+        self.fmt = fmt
+        self._groups = match.groups(default="0")
+
+    def __str__(self):
+        return self.fmt
+
+    def __repr__(self):
+        return "<VersionMetadata fmt={0.fmt!r}>".format(self)
+
+    def __eq__(self, other):
+        return isinstance(other, VersionMetadata) and self._groups == other._groups
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    @staticmethod
+    def _can_compare(other):
+        if not isinstance(other, VersionMetadata):
+            raise TypeError("Cannot compare with {0.__class__.__name__!r}".format(other))
+
+    def __le__(self, other):
+        self._can_compare(other)
+        return self._groups <= other._groups
+
+    def __lt__(self, other):
+        self._can_compare(other)
+        return self._groups < other._groups
+
+    def __ge__(self, other):
+        self._can_compare(other)
+        return self._groups >= other._groups
+
+    def __gt__(self, other):
+        self._can_compare(other)
+        return self._groups > other._groups
