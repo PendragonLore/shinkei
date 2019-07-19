@@ -58,7 +58,9 @@ class VersionMetadata:
     ----------
     fmt: :class:`str`
         The version string.
-        Must be complient to the `elixir specification <https://hexdocs.pm/elixir/Version.html>`_."""
+        Must be complient to the `elixir specification <https://hexdocs.pm/elixir/Version.html>`_.
+    """
+
     __slots__ = ("fmt", "_groups")
 
     # from the official Semantic Versioning repo.
