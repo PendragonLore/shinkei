@@ -326,9 +326,9 @@ class Client:
         name = handler.qualified_name
         if name in self.handlers:
             raise ValueError("Handler {0} is already registered.".format(name))
-        self.handlers[name] = ret = handler
+        self.handlers[name] = handler
 
-        return ret
+        return handler
 
     def remove_handler(self, handler_name):
         """Remove a handler by name.
@@ -405,7 +405,8 @@ class Client:
         if not self._rest.session.closed:
             await self._rest.session.close()
         self._ws.keep_alive.stop()
-        await self._ws.close(1000)
+        if self._ws.open:
+            await self._ws.close(1000)
 
     async def _do_poll(self):
         try:
@@ -486,4 +487,5 @@ class _ClientMixin:
         return self._client
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self._client.close()
+        if not self._client.is_closed:
+            await self._client.close()
