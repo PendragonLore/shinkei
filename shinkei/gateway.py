@@ -91,7 +91,7 @@ class WSClient(websockets.WebSocketClientProtocol):
             cache = self.client._cache_manager
             if cache:
                 log.info("Refreshing metadata, probably due to a reconnect (%d entries)", len(cache))
-                await self.update_metadata(cache.pop_all(), cache=False)
+                await self.update_metadata(cache.data, cache=False)
             return
 
         if op == self.OP_INVALID:

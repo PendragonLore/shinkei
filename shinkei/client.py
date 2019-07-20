@@ -92,11 +92,9 @@ class CacheManager:
     def add(self, item):
         self._internal.update(item)
 
-    def pop_all(self):
-        copy = self._internal.copy()
-        self._internal.clear()
-
-        return copy
+    @property
+    def data(self):
+        return self._internal
 
     def __bool__(self):
         return bool(self._internal)
