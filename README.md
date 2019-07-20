@@ -1,7 +1,7 @@
 # shinkei
 
 [![Pipeline Status](https://img.shields.io/gitlab/pipeline/PendragonLore/shinkei.svg)](https://gitlab.com/PendragonLore/shinkei/pipelines)
-[![ReadTheDocs Status](https://img.shields.io/readthedocs/shinkei.svg)](https://readthedocs.org/projects/async-pokepy/)
+[![ReadTheDocs Status](https://img.shields.io/readthedocs/shinkei.svg)](https://readthedocs.org/projects/shinkei/)
 
 
 A client library for [singyeong](https://github.com/queer/singyeong), a fully-dynamic, metadata-oriented service mesh.
