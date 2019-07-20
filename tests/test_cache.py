@@ -16,7 +16,4 @@ def test_cache_manager():
 
     assert manager._internal == {"a": "b", "b": 123}
 
-    clared = manager.pop_all()
-
-    assert manager._internal == {}
-    assert clared == {"a": "b", "b": 123}
+    assert manager.data == manager._internal
