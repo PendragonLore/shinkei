@@ -21,6 +21,7 @@ def test_metadata_payload():
 def test_version_metadata():
     with pytest.raises(ValueError):
         VersionMetadata("abc")
+        VersionMetadata("NotAVersion1.0.0")
 
     v1 = VersionMetadata("1.0.1")
     v2 = VersionMetadata("1.0.2")
@@ -41,3 +42,12 @@ def test_version_metadata():
     vplus = VersionMetadata("1.0.3+abc123")
 
     assert vplus > v3
+
+    assert not v3 == 1
+    assert v3 != 1
+
+    with pytest.raises(TypeError):
+        assert v3 > 1
+        assert v3 >= 1
+        assert v3 <= 1
+        assert v3 < 1

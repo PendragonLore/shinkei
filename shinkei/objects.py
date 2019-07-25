@@ -91,23 +91,22 @@ class VersionMetadata:
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    @staticmethod
-    def _can_compare(other):
-        if not isinstance(other, VersionMetadata):
-            raise TypeError("Cannot compare with {0.__class__.__name__!r}".format(other))
-
     def __le__(self, other):
-        self._can_compare(other)
-        return self._groups <= other._groups
+        if isinstance(other, VersionMetadata):
+            return self._groups <= other._groups
+        return NotImplemented
 
     def __lt__(self, other):
-        self._can_compare(other)
-        return self._groups < other._groups
+        if isinstance(other, VersionMetadata):
+            return self._groups < other._groups
+        return NotImplemented
 
     def __ge__(self, other):
-        self._can_compare(other)
-        return self._groups >= other._groups
+        if isinstance(other, VersionMetadata):
+            return self._groups >= other._groups
+        return NotImplemented
 
     def __gt__(self, other):
-        self._can_compare(other)
-        return self._groups > other._groups
+        if isinstance(other, VersionMetadata):
+            return self._groups > other._groups
+        return NotImplemented
