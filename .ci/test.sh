@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 echo "$ pytest"
 PYTHONPATH="$(pwd)" pytest -vs
 echo "$ isort"
