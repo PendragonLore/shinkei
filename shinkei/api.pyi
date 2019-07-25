@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import asyncio
 from typing import Dict, Optional, Set, Union
 

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from shinkei import VersionMetadata
 from shinkei.gateway import WSClient
 

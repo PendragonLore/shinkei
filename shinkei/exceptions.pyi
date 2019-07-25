@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import aiohttp
 
 class ShinkeiException(Exception): ...

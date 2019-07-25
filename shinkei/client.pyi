@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import asyncio
 from types import TracebackType
 from typing import Any, Callable, Coroutine, Dict, Iterable, List, Optional, Type, Union

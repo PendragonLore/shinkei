@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from shinkei.client import CacheManager
 
 
