@@ -7,10 +7,10 @@ from setuptools import setup
 
 ROOT = pathlib.Path(__file__).parent
 
-with open(str(ROOT / "requirements.txt")) as f:
+with (ROOT / "requirements.txt").open(encoding="utf-8") as f:
     requirements = f.read().splitlines()
 
-with open(str(ROOT / "shinkei" / "__init__.py")) as f:
+with (ROOT / "shinkei" / "__init__.py").open(encoding="utf-8") as f:
     version = re.search(r"^__version__\s*=\s*['\"]([^'\"]*)['\"]", f.read(), re.MULTILINE).group(1)
 
 if not version:
@@ -34,7 +34,7 @@ if version.endswith(("a", "b", "rc")):
     except Exception:
         pass
 
-with open(str(ROOT / "README.md")) as f:
+with (ROOT / "README.md").open(encoding="utf-8") as f:
     readme = f.read()
 
 extras = {
