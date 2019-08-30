@@ -19,7 +19,8 @@ log = logging.getLogger(__name__)
 
 
 def connect(url, application_id, client_id, auth=None, *,
-            tags=None, reconnect=True, session=None, loop=None, klass=None, handlers=None, **kwargs):
+            tags=None, reconnect=True, session=None, loop=None, klass=None, handlers=None,
+            proxy_ip=None, **kwargs):
     """Connect to singyeong.
 
     Since this returns a context manager mixin of :class:`Client`, both
@@ -71,7 +72,9 @@ def connect(url, application_id, client_id, auth=None, *,
         If non is provided, :func:`asyncio.get_event_loop` will be used to get one.
     klass: Optional[Type[:class:`Client`]]
         The classed used to instantiate the client.
-        Defaults to :class:`Client`
+        Defaults to :class:`Client`.
+    proxy_ip: Optional[:class:`str`]
+        The IP that the server will use to proxy HTTP requests.
     kwargs
         All other kwargs will be passed onto the Client class' ``_connect`` method.
         Useful when passing a custom class.
@@ -82,7 +85,8 @@ def connect(url, application_id, client_id, auth=None, *,
         The client.
     """
     return _ClientMixin(url, application_id, client_id, auth, reconnect=reconnect,
-                        session=session, loop=loop, tags=tags, klass=klass, handlers=handlers, **kwargs)
+                        session=session, loop=loop, tags=tags, klass=klass, handlers=handlers,
+                        proxy_ip=proxy_ip, **kwargs)
 
 
 class CacheManager:
@@ -135,7 +139,7 @@ class Client:
 
     @classmethod
     async def _connect(cls, url, application_id, client_id, auth=None, *, reconnect=True,
-                       session=None, loop=None, tags=None, handlers=None, **_):
+                       session=None, loop=None, tags=None, handlers=None, proxy_ip=None, **_):
         self = cls()
 
         if handlers is not None:
@@ -148,6 +152,7 @@ class Client:
         self.id = client_id
         self.app_id = application_id
         self.tags = tags
+        self.proxy_ip = proxy_ip
 
         ws_url = (URL(url) / "gateway" / "websocket").with_query("encoding=json")
         scheme = self.schema_map.get(ws_url.scheme, ws_url.scheme)

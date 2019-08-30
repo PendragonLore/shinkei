@@ -150,11 +150,15 @@ class WSClient(websockets.WebSocketClientProtocol):
                 "reconnect": self.reconnect,
             }
         }
+
         if self.auth is not None:
             payload["d"]["auth"] = self.auth
         if self.tags is not None:
             # noinspection PyTypeChecker
             payload["d"]["tags"] = self.tags
+        if self.client.proxy_ip is not None:
+            payload["d"]["ip"] = self.client.proxy_ip
+
         log.info("Sending IDENTIFY payload")
         await self.send_json(payload)
 

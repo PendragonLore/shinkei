@@ -52,6 +52,7 @@ class Client:
     reconnect: bool
     ws_url: URL
     restricted: bool
+    proxy_ip: Optional[str]
 
     _ws: WSClient
     _rest: APIClient
@@ -70,7 +71,7 @@ class Client:
     async def _connect(cls, url: str, application_id: str, client_id: str,
                        auth: Optional[str] = ..., *, tags: Optional[list] = ..., reconnect: Optional[bool] = ...,
                        session: Optional[aiohttp.ClientSession] = ..., loop: Optional[asyncio.AbstractEventLoop] = ...,
-                       handlers: Optional[List[Handler]] = ...,
+                       handlers: Optional[List[Handler]] = ..., proxy_ip: Optional[str] = ...,
                        **_) -> Client: ...
 
     async def send(self, data: Union[str, dict, float, int, list], *, target: QueryBuilder,
@@ -114,7 +115,7 @@ class _ClientMixin:
     def __init__(self, url: str, application_id: str, client_id: str,
                  auth: Optional[str] = ..., *, tags: Optional[list] = ..., reconnect: Optional[bool] = ...,
                  session: Optional[aiohttp.ClientSession] = ..., loop: Optional[asyncio.AbstractEventLoop] = ...,
-                 handlers: Optional[List[Handler]] = ...,
+                 handlers: Optional[List[Handler]] = ..., proxy_ip: Optional[str] = ...,
                  **kwargs) -> None: ...
 
     def __await__(self) -> Coroutine: ...

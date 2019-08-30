@@ -91,6 +91,9 @@ class VersionMetadata:
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    # this comparison with strings instead of ints is very odd
+    # TODO: either remove it or change it
+
     def __le__(self, other):
         if isinstance(other, VersionMetadata):
             return self._groups <= other._groups
