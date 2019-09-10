@@ -34,7 +34,7 @@ class ShinkeiHTTPException(ShinkeiException):
 
 
 class ShinkeiWSException(ShinkeiException):
-    """Generic WebSoecket exception.
+    """Generic WebSocket exception.
 
     Attributes
     ----------
