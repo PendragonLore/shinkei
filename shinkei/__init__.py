@@ -5,7 +5,7 @@ __author__ = "Lorenzo"
 __license__ = "MIT"
 __copyright__ = "Copyright 2019 Lorenzo"
 __docformat__ = "restructedtext en"
-__version__ = "0.1.5"
+__version__ = "0.1.6"
 
 import logging
 
