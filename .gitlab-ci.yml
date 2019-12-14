@@ -77,9 +77,9 @@ alpine 3.8:
   retry: 1
   when: always
 
-stretch 3.5:
+buster 3.5:
   stage: build
-  image: python:3.5-stretch
+  image: python:3.5-buster
   before_script:
     - ./.ci/install.sh
   script:
@@ -92,9 +92,9 @@ stretch 3.5:
   retry: 1
   when: always
 
-stretch 3.6:
+buster 3.6:
   stage: build
-  image: python:3.6-stretch
+  image: python:3.6-buster
   before_script:
     - ./.ci/install.sh
   script:
@@ -107,9 +107,9 @@ stretch 3.6:
   retry: 1
   when: always
 
-stretch 3.7:
+buster 3.7:
   stage: build
-  image: python:3.7-stretch
+  image: python:3.7-buster
   before_script:
     - ./.ci/install.sh
   script:
@@ -122,9 +122,9 @@ stretch 3.7:
   retry: 1
   when: always
 
-stretch 3.8:
+buster 3.8:
   stage: build
-  image: python:3.8-rc-stretch
+  image: python:3.8-buster
   before_script:
     - ./.ci/install.sh
   script:
