@@ -17,7 +17,6 @@ class Version:
 class MetadataPayload:
     __slots__: Iterable[str]
 
-    sender: str
     nonce: Optional[str]
     payload: Union[str, int, float, dict]
 

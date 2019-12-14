@@ -29,24 +29,21 @@ class MetadataPayload:
 
     Attributes
     ----------
-    sender: :class:`str`
-        The ID of the client which sent the payload.
     nonce
         A unique nonce used to identify the payload.
     payload: Union[:class:`str`, :class:`int`, :class:`float`, :class:`list`, :class:`dict`]
         The payload.
     """
 
-    __slots__ = ("sender", "nonce", "payload")
+    __slots__ = ("nonce", "payload")
 
     def __init__(self, data):
-        self.sender = data["sender"]
         self.nonce = data["nonce"]
 
         self.payload = data["payload"]
 
     def __repr__(self):
-        return "<MetadataPayload sender={0.sender!r} nonce={0.nonce!r}>".format(self)
+        return "<MetadataPayload nonce={0.nonce!r}>".format(self)
 
 
 class VersionMetadata:
