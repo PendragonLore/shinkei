@@ -13,11 +13,10 @@ def test_version():
 
 
 def test_metadata_payload():
-    obj = MetadataPayload({"nonce": None, "payload": 123, "sender": "12345"})
+    obj = MetadataPayload({"nonce": None, "payload": 123})
 
     assert obj.nonce is None
     assert obj.payload == 123
-    assert obj.sender == "12345"
 
 
 def test_version_metadata():
