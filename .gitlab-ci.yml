@@ -152,7 +152,7 @@ deploy:
   stage: deploy
   image: python:3.8-alpine
   before_script:
-    - apk add gcc linux-headers musl-dev libffi-dev --no-cache
+    - apk add gcc linux-headers musl-dev libffi-dev openssl-dev --no-cache
     - pip install -U twine
     - ls dist
     - export TWINE_USERNAME="$(echo -e $TWINE_USERNAME)"
