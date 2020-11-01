@@ -98,7 +98,7 @@ class WSClient(websockets.WebSocketClientProtocol):
             msg = d["error"]
             self._dispatch("error", msg)
 
-            raise ShinkeiWSException(msg)
+            raise ShinkeiResumeWS(msg)
 
         if op == self.OP_DISPATCH:
             self._dispatch("data", MetadataPayload(d))
