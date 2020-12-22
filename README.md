@@ -1,3 +1,5 @@
+# !! NOT MAINTAINED ANYMORE !!
+
 # shinkei
 
 [![Pipeline Status](https://img.shields.io/gitlab/pipeline/PendragonLore/shinkei.svg)](https://gitlab.com/PendragonLore/shinkei/pipelines)
